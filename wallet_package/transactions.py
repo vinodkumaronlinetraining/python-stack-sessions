@@ -20,7 +20,7 @@ def transaction_filter(start_date,end_date):
     for amt, timestamp in user_transactions:
         if start_date <= timestamp <= end_date:
             print(f"Amount :{amt}, Date: {timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
-            
+
 
 def debit_penalty(penalty):
     global wallet_balance,MINIMUM_BALANCE
@@ -53,7 +53,7 @@ def transfer_funds(from_account, to_account, amount):
 
 # transfer_funds("shop_account","my_account",500)
 
-calculate_fee = lambda amount: amount + 50
+calculate_fee = lambda amount: amount * 0.05
 
 def check_validity(func):
     def validate(args,kwargs="credit"):
@@ -77,11 +77,13 @@ def add_transaction(new_transaction, type="credit"):
         else:
             total_amount = new_transaction - fee
         print("the initial balance: ",wallet_balance)
+        user_transactions_array.append(total_amount)
         user_transactions.append((total_amount, datetime.now() ))
         wallet_balance += total_amount
         print("updated balance: ", wallet_balance)
         print(f"the transaction fee is {fee}")
         print("the updated user transactions list: ",user_transactions)
+        print("The user transactions array",user_transactions_array)
     else:
         print("user inactive or limit reached")
 # add_transaction(300.0)
@@ -91,7 +93,7 @@ def sum_transactions(transactions, index=0):
         return 0
     else:
         return transactions[index] + sum_transactions(transactions, index + 1)
-    
+
 
 def transaction_generator():
     global user_transactions

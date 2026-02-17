@@ -66,6 +66,9 @@ def main():
     display_user_info()
     print("-----------------------------------------")
 
+    print(sum_transactions(user_transactions_array))
+    
+
     print("-----the Transaction loop-----------")
     transaction_loop()
     print("-----------------")

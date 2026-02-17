@@ -100,17 +100,120 @@ is_active = True
 # print(f"the second:{next(gen)}")
 # print(gen.send("this is the message"))
 
+# exception handling
+# -----------------
 
-def add_transactions(new):
+# 1. without exceptions seing what happens using different function calls
+
+# def add_transaction(new_transaction):
+#     global wallet_balance, user_transactions, is_active
+#     amount = float(new_transaction)
+#     if is_active and amount < 10000 and amount > 0:
+#         user_transactions.append(amount)
+#         wallet_balance += amount
+#         print(f"Transaction successful: {amount}")
+#     else:
+#         print("Transaction failed: Invalid amount or account is inactive.")
+    
+
+
+# add_transaction(250.0)      # Success
+# add_transaction(-100.0)     # Invalid amount
+# add_transaction("invalid")  # TypeError
+# add_transaction(None)       # TypeError
+
+# 2. now using try, except blocks with general exception:
+
+# def add_transaction(new_transaction):
+#     global wallet_balance, user_transactions, is_active
+#     try:
+#         amount = float(new_transaction)
+#         if is_active and amount < 10000 and amount > 0:
+#             user_transactions.append(amount)
+#             wallet_balance += amount
+#             print(f"Transaction successful: {amount}")
+#         else:
+#             print("Transaction failed: Invalid amount or account is inactive.")
+#     except Exception as e:
+#         print("Invalid input: Please enter a numeric value for the transaction amount.", e)
+
+# add_transaction(250.0)      # Success
+# add_transaction(-100.0)     # Invalid amount
+# add_transaction("invalid")  # TypeError
+# add_transaction(None)       # TypeError
+
+
+# 3. multiple builtin exceptions:
+
+# def debit_penalty(penalty_amount):
+#     try:
+#         amount = float(penalty_amount)
+#         if is_active and amount > 0 and amount < 5000:
+#             global wallet_balance
+#             wallet_balance -= amount
+#             user_transactions.append(-amount)
+#             print(f"Penalty deducted successfully: {amount}")
+#             return wallet_balance
+#         else:
+#             raise ValueError("Penalty failed: invalid amount or account inactive")
+#     except ValueError as e:
+#         print(f"ValueError caught: {e}")
+#     except TypeError:
+#         print("TypeError caught: penalty amount must be a number")
+#     except Exception as e:
+#         print(f"Unexpected error caught: {e}")
+#     finally:
+#         print("Penalty processing completed.\n")
+
+# debit_penalty(50.0)        # Success
+# debit_penalty(-25.0)       # ValueError
+# debit_penalty("invalid")   # ValueError
+# debit_penalty(None)        # TypeError
+# debit_penalty(10000.0)     # ValueError (exceeds limit)
+
+# creating custom exceptions:
+# ---------------------------------
+
+class InValidAmountError(Exception):
+    """this is a invalid amount error exception"""
+    pass
+class InActiveUserError(Exception):
+     pass
+def add_transcation(new_trans):
     global wallet_balance, user_transactions, is_active
-    try:
-        amount = float(new)
-        if is_active and amount < 10000 and amount > 0:
-            user_transactions.append(amount)
-            wallet_balance += amount
-            print("transaction success")
-        else:
-            raise TypeError("invalid input")
-    except Exception as e:
-        print(f" Invalid input, transaction failed::::", e)    
-add_transactions()
+
+    amount = float(new_trans)
+    if not is_active:
+         raise InActiveUserError("The user is inactive")
+    if amount > 10000:
+        raise InValidAmountError("The amount is above the limit ")
+    if amount < 0:
+        raise InValidAmountError("The amount is less than 0")
+    
+    user_transactions.append(amount)
+    wallet_balance += amount
+    print(f"Updated balance: {wallet_balance}")
+    # print(f"this is the intrest: {intrest}")
+    
+        
+       
+    
+try:
+
+    add_transcation(100000)
+except ValueError as e:
+        print(f"ValueError Caught: {e}")
+except InActiveUserError as e:
+     print(f"InActiveusererror caught: {e}")
+except InValidAmountError as e:
+    print(f"invalidamounterror caught: {e}")
+except NameError as e:
+    print(f"NameError Caught: {e}")
+except TypeError as e:
+    print(f"TypeError Caught : {e}")
+except ZeroDivisionError as e:
+    print(f"ZeroDivivsionError Caught: {e}")
+except Exception as e:
+        print(f"we have an error: {e}") 
+finally:
+     print("Add transaction function attempted")

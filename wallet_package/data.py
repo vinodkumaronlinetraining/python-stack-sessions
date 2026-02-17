@@ -1,4 +1,5 @@
 from datetime import datetime
+from array import array
 application_name = "User App"
 first_name = " VINOD "
 last_name = "kumar"
@@ -14,7 +15,7 @@ user_profile = {
     "Wallet_balance": 1000.0
 }
 
-
+user_transactions_array = array("f",[1000.0, 500.0, 346.0, 500.0])
 
 user_transactions = [(1000.0, datetime(2026, 1, 1, 10, 0)),
                      (500.0, datetime(2026, 2, 2, 9, 0)),
