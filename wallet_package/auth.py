@@ -54,31 +54,25 @@ def validate_transaction():
 
 def check_user_transaction():
     global user_cred, user_devices
+    try:
+        device_used = input("enter the device used:")
+        pin_used = input("enter the trans pin: ")
 
-    device_used = input("enter the device used:")
-    pin_used = input("enter the trans pin: ")
-
-    
-    if device_used in user_devices and pin_used in user_cred:
-        print(f"valid user pin and trusted device{device_used}")
+        
+        if device_used not in user_devices:
+            raise InValidDeviceError(f"Device used {device_used} is not trusted")
+        if pin_used not in user_cred:
+            raise InValidPinError(f"Invalid Transaction pin entered")
+        
+        print(f"The device and pin verified")
         return True
-    else:
-        print("user not trusted")
-        return False
+    except InValidDeviceError as e:
+        print(f"InValidDeviceError caught: {e}")
+    except InValidPinError as e:
+        print(f"InValidPinError Caught: {e}")
+    except Exception as e:
+        print(f"UnKnown error occured: {e}")
+    finally:
+        print("the check_user_transaction function is attempted")
 # check_user_transaction()
 
-def check_device():
-    global user_devices
-                                                    
-    user_device_1 = user_devices       
-    user_device_2 = user_devices
-    user_device_3 = list(user_devices) 
-
-    if user_device_1 == user_device_2:
-        print("they both refer to the same object")
-
-    if user_device_1 is not user_device_3:
-        print("they are not same")
-    else:
-        print(" they are same")
-# check_device()

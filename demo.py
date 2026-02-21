@@ -1,8 +1,14 @@
-user_transactions = [ 1000.0, 500.0, 345, 150.5, 400]
+transactions = [ 1000.0, 500.0, 345, -150.5, -400]
+from datetime import datetime
 wallet_balance = 1000.0
 MINIMUM_BALANCE, ALERT_BALANCE = 50, 100
 is_active = True
-
+user_transactions = [(1000.0, datetime(2026, 1, 1, 10, 0)),
+                     (500.0, datetime(2026, 2, 2, 9, 0)),
+                     (346, datetime(2026, 2, 4, 5, 9)),
+                     (500, datetime(2026, 5, 7, 7, 30)),
+                     (-600, datetime(2026, 6, 6, 8, 40))
+]
 
 
 # def check_validity(func):
@@ -174,46 +180,169 @@ is_active = True
 # creating custom exceptions:
 # ---------------------------------
 
-class InValidAmountError(Exception):
-    """this is a invalid amount error exception"""
-    pass
-class InActiveUserError(Exception):
-     pass
-def add_transcation(new_trans):
-    global wallet_balance, user_transactions, is_active
+# class InValidAmountError(Exception):
+#     """this is a invalid amount error exception"""
+#     pass
+# class InActiveUserError(Exception):
+#      pass
+# def add_transcation(new_trans):
+#     global wallet_balance, user_transactions, is_active
 
-    amount = float(new_trans)
-    if not is_active:
-         raise InActiveUserError("The user is inactive")
-    if amount > 10000:
-        raise InValidAmountError("The amount is above the limit ")
-    if amount < 0:
-        raise InValidAmountError("The amount is less than 0")
+#     amount = float(new_trans)
+#     if not is_active:
+#          raise InActiveUserError("The user is inactive")
+#     if amount > 10000:
+#         raise InValidAmountError("The amount is above the limit ")
+#     if amount < 0:
+#         raise InValidAmountError("The amount is less than 0")
     
-    user_transactions.append(amount)
-    wallet_balance += amount
-    print(f"Updated balance: {wallet_balance}")
-    # print(f"this is the intrest: {intrest}")
+#     user_transactions.append(amount)
+#     wallet_balance += amount
+#     print(f"Updated balance: {wallet_balance}")
+#     # print(f"this is the intrest: {intrest}")
     
         
        
     
-try:
+# try:
 
-    add_transcation(100000)
-except ValueError as e:
-        print(f"ValueError Caught: {e}")
-except InActiveUserError as e:
-     print(f"InActiveusererror caught: {e}")
-except InValidAmountError as e:
-    print(f"invalidamounterror caught: {e}")
-except NameError as e:
-    print(f"NameError Caught: {e}")
-except TypeError as e:
-    print(f"TypeError Caught : {e}")
-except ZeroDivisionError as e:
-    print(f"ZeroDivivsionError Caught: {e}")
-except Exception as e:
-        print(f"we have an error: {e}") 
-finally:
-     print("Add transaction function attempted")
+#     add_transcation(100000)
+# except ValueError as e:
+#         print(f"ValueError Caught: {e}")
+# except InActiveUserError as e:
+#      print(f"InActiveusererror caught: {e}")
+# except InValidAmountError as e:
+#     print(f"invalidamounterror caught: {e}")
+# except NameError as e:
+#     print(f"NameError Caught: {e}")
+# except TypeError as e:
+#     print(f"TypeError Caught : {e}")
+# except ZeroDivisionError as e:
+#     print(f"ZeroDivivsionError Caught: {e}")
+# except Exception as e:
+#         print(f"we have an error: {e}") 
+# finally:
+#      print("Add transaction function attempted")
+
+# function to filter the transactions and create a new list
+
+# def debit_transactions():
+#     global user_transactions
+
+#     for amt in user_transactions:
+#         if amt < 0:
+#             print(f"debit transactions: {amt}")
+
+# debit_transactions()
+
+# list comprehension:
+# print(f"the user_transaction list: {user_transactions}")
+# debit_transactions = [amt for amt in user_transactions if amt <0]
+# print(debit_transactions)
+
+# set comprehension:
+user_devices = {"my_phone", "my_pc","my_ipad","my_ipad"}
+# def add_device(new_device):
+#     global user_devices
+
+#     if new_device not in user_devices:
+#         user_devices.add(new_device)
+#         print("new device added",new_device)
+# add_device("iphone")
+
+# new_device = "iphone"
+# user_devices = { device for device in user_devices if device != new_device} | {new_device}
+
+# print(user_devices)
+
+# print(user_transactions)
+# transaction_summary = { amt: dt.strftime('%Y-%m-%d %H:%M:%S') for amt,dt in user_transactions}
+
+# print("----------------\n")
+
+# print(transaction_summary)
+
+
+# open a new file
+#---------------------
+# file = open("sample.txt","w")
+# file.write("this is a sample file")
+# file.close()
+
+# # read from an existing file:
+# #---------------
+# file = open("sample.txt","r")
+# content = file.read()
+# print(content)
+
+
+# file = open("sample.txt","w")
+# file.write("this is the second line in the file")
+# file.close()
+
+# file = open("sample.txt")
+# content = file.read()
+# print(content)
+
+# file = open("sample.txt","a")
+# file.write("\nthis is an additional append data")
+# file.close
+
+
+# file = open("sample.txt", "")
+# content = file.readlines()
+# print(content)
+
+# import os
+# os.remove("sample.txt")
+
+# debit_trans = [ amt for (amt,timestamp) in user_transactions if amt < 0]
+# print(debit_trans)
+
+
+# user_devices = {"my_phone", "my_pc","my_ipad","my_ipad"}
+# new_device = "computer1"
+# user_devices = {device for device in user_devices if device != new_device} | {new_device}
+
+# print(user_devices)
+
+# text_file = open("sample.txt", 'w')
+# text_file.write("This is a new file")
+# text_file.close()
+
+# text_file2 = open("sample.txt", 'w')
+# data = text_file2.read()
+# print(data)
+
+# def save_transactions(filename,transaction):
+#     global user_transactions
+
+#     try:
+#         with open(filename,'x') as file:
+#             amt, timestamp = transaction
+#             file.write(f"{amt}, {timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
+#         print("the append was successfull")
+
+#     except Exception as e:
+#         print("error caught: ",e)
+# save_transactions("exclusive.txt",(250.0, datetime.now()))
+
+
+import json
+data = {
+    "name": "vinod",
+    "age": 30,
+    "city": "hyd"
+}
+file = open("sample.json", 'w')
+json.dump(data, file )
+
+
+# f = open("sample.txt",'wb')
+# data = " this is a binary data"
+# f.write(data.encode("utf-8"))
+# f.close()
+
+# f = open("sample.txt", "r+")
+# data = f.read()
+# print(data)

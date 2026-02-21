@@ -1,31 +1,31 @@
-# Debugging in vscode:
------------------------------
-created a file sample.py to see debugging
+# Regular Expressions in Python
+- `re.match()` - checks for a match only at the beginning of the string
+- `re.search()` - checks for a match anywhere in the string
+- `re.findall()` - returns a list of all matches in the string
+- `re.sub()` - replaces occurrences of a pattern with a specified replacement string
+- `re.split()` - splits a string based on a specified pattern
+- `re.fullmatch()` - checks if the entire string matches the pattern
 
-
-* in your .py file, set breakpoints by clicking in the gutter to the left of the line numbers
-* open the debug view by clicking on the bug icon in the left sidebar or pressing `Ctrl+Shift+D`
-* options appear at the top of the debug view, click on the green play button to start debugging
-* on the left side you will be able to view the variables and their values change as we step through the code
-* use the toolbar at the top of the debug view to step through the code, continue running, or stop debugging
-* in the left sidebar, you can add items to the watch list to keep an eye on specific variables or expressions
-* you can also view the call stack to see the sequence of function calls leading to the current breakpoint
-* to inspect the value of a variable, hover over it in the editor or add it to the watch list
-
-# exception handling:
-
-in the demo.py file;
-
-* normal code with errors
-
-* use try-except blocks to handle exceptions gracefully
-
-* in the try block, write the code that may raise an exception
-
-* in the except block, specify the type of exception you want to catch and write the code to handle it
-
-* you can have multiple except blocks to handle different types of exceptions
-
-* you can also use a generic except block to catch any exception, but it's generally better to catch specific exceptions
-
-* creating custom exceptions by defining a new class that inherits from the built-in Exception class
+examples of regular expression patterns:
+- `\d` - matches any digit (0-9)
+- `\w` - matches any alphanumeric character (letters, digits, underscore)
+- `\s` - matches any whitespace character (space, tab, newline)
+- `\b` - matches a word boundary (the position between a word character and a non-word character)
+- `^` - matches the start of the string
+- `$` - matches the end of the string
+- `[]` - matches any character within the brackets
+- `()` - groups a pattern together
+- `|` - matches either the pattern before or after the pipe
+- `*` - matches 0 or more occurrences of the preceding pattern
+- `+` - matches 1 or more occurrences of the preceding pattern
+- `?` - matches 0 or 1 occurrence of the preceding pattern
+- `{n}` - matches exactly n occurrences of the preceding pattern
+- `{n,}` - matches n or more occurrences of the preceding pattern
+- `{n,m}` - matches between n and m occurrences of the preceding pattern
+- `\` - escapes a special character to match it literally
+- `.` - matches any character except a newline
+- .* → Any number of characters (including zero).
+- `|` - matches either the pattern before or after the pipe
+- `-` - matches a range of characters when used inside square brackets
+- (?=...) → Positive lookahead. It checks that something exists ahead in the string without including it in the match.
+- (?!...) → Negative lookahead. It checks that something does not exist ahead in the string without including it in the match.

@@ -21,9 +21,7 @@ def transaction_loop():
             # validate_transaction()
             print("-----Add a transaction-----")
             new_trans = float(input("Enter the transaction amount: "))
-            if new_trans <=0:
-                print(" invalid input")
-                continue
+            
             add_transaction(new_trans)
 
         elif action == "2":
@@ -67,6 +65,9 @@ def main():
     print("-----------------------------------------")
 
     print(sum_transactions(user_transactions_array))
+
+    debit_transactions = [ (amt , timestamp) for amt,timestamp in user_transactions if amt<0 ]
+    print(debit_transactions)
     
 
     print("-----the Transaction loop-----------")
