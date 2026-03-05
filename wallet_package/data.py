@@ -1,25 +1,67 @@
 from datetime import datetime
 from array import array
-application_name = "User App"
-first_name = " VINOD "
-last_name = "kumar"
-address = 560064
-password = 1234
-wallet_balance = 1000.0
-MINIMUM_BALANCE, ALERT_BALANCE = 50, 100
-is_active = True
+from wallet_package.exceptions import *
+import re
 
-user_profile = {
-    "user_name": "vinod kumar",
-    "address": 560064,
-    "Wallet_balance": 1000.0
-}
+class User:
+    def  __init__(self, first_name, last_name, address, password):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.address = address
+        self.password = password
+        self.wallet_balance = 1000.0
+        self.is_active = True
+        self.profile_info = {
+            "first_name": first_name,
+            "last_name": last_name,
+            "address": address
+        }
 
-user_transactions_array = array("f",[1000.0, 500.0, 346.0, 500.0])
 
-user_transactions = [(1000.0, datetime(2026, 1, 1, 10, 0)),
-                     (500.0, datetime(2026, 2, 2, 9, 0)),
-                     (346, datetime(2026, 2, 4, 5, 9)),
-                     (500, datetime(2026, 5, 7, 7, 30)),
-                     (-600, datetime(2026, 6, 6, 8, 40))
-]
+
+    def change_password(self, new_password):
+    
+        try:
+            if new_password and re.fullmatch(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z@\d]{8,}$', new_password):
+
+                self.password = new_password
+                print("changed password:",self.password)
+            else:
+                raise Exception
+        except ValueError as e:
+            print(f"ValueError caught: {e}")
+        except Exception as e:
+            print(f"UnKnown Error Caught: {e}")
+        finally:
+            print("the change_password function is attempted here")
+
+
+    def update_profile(self,key,value):
+        
+        try:
+            if not isinstance(self.profile_info,dict):
+                raise TypeError("user_profile must be a dictionary")
+            
+            self.profile_info[key]=value
+            print(f"updated {key}: {value}")
+            # print("all the keyword args passed",)
+        
+        except TypeError as e:
+            print(f"TypeError Caught : {e}")
+        except ValueError as e:
+            print(f"ValueError Caught : {e}")
+        except Exception as e:
+            print(f"UnKnown Exception caught: {e}")
+        finally:
+            print("the update_profile function is attempted here")
+
+    def display_info(self):
+        print("User information")
+        try:
+            for key, value in self.profile_info.items():
+                print(f"{key.capitalize()} : {value}")
+            print(f"Wallet balance: {self.wallet_balance}")
+        except Exception as e:
+            print("Error Caught:", e)
+
+
