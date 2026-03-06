@@ -1,126 +1,268 @@
 # Wallet App — Session Summary
 
-## What Was Covered Today
-
-Today's session focused on refactoring the wallet app from a functional/module-based structure into a proper **Object-Oriented Programming (OOP)** design using classes, and then extending it with **JSON-based persistent storage**.
-
----
-
-## 1. OOP Refactoring — Classes & Responsibilities
-
-The app was reorganised into four classes, each with a single responsibility:
-
-### `User` — `data.py`
-Holds all user data and profile-related actions.
-
-- **Attributes:** `first_name`, `last_name`, `address`, `password`, `wallet_balance`, `is_active`, `profile_info`
-- **Methods:** `change_password()`, `update_profile()`, `display_info()`
-- **Key fix:** `wallet_balance` was removed from `profile_info` dict to avoid stale data — `display_info()` now reads `self.wallet_balance` directly as the single source of truth
-
-### `Auth` — `auth.py`
-Handles all authentication and validation logic.
-
-- **Attributes:** `user_cred`, `user_devices`, `MINIMUM_BALANCE`, `ALERT_BALANCE`
-- **Methods:** `validate_user()`, `validate_transaction()`, `add_pin()`, `add_device()`
-
-### `Wallet` — `transactions.py`
-Processes transactions and manages transaction history.
-
-- **Attributes:** `self.user`, `self.auth`, `self.user_transactions`
-- **Methods:** `add_transaction()`, `access_transaction_history()`, `add_interest()`, `debit_penalty()`
-- **Uses:** `@staticmethod` for `calculate_fee`, a custom `auth_required` decorator for validation
-
-### `Logger` — `log.py`
-Handles logging of all transaction events to a JSON file.
-
-- **Method:** `log_transaction()` — static method that appends log entries to `transaction_log.json`
+# Python Learning Series — Session 7
+# Object-Oriented Programming: Inheritance & JSON Storage
 
 ---
 
-## 2. Key OOP Concepts Applied
 
-### Dependency Injection
-`Wallet.__init__` receives `user` and `auth` as parameters rather than creating them internally:
+
+## . JSON File Storage with a Storage Class
+
+Instead of re-entering data every time the program runs, we can **persist data to a JSON file** and reload it on startup.
+
+### Why JSON?
+- Human-readable format
+- Built-in Python support via the `json` module
+- Easy to save and load dictionaries and lists
+- Works well for storing structured data like user profiles and transactions
+
+
+
+### Key Design Decisions
+- `FILE_PATH` as a **class variable** means it's shared across all calls and easy to change in one place
+- `_load_all()` is a **private static method** (prefixed with `_`) — it's a helper not meant to be called from outside the class
+- The **first name + last name** combination is used as a unique dictionary key
+- `datetime` objects are **serialized to strings** before saving (JSON cannot store datetime objects natively) and **parsed back** when loading
+- All methods use `try/except` to handle file errors gracefully
+
+---
+
+
+### Flow Diagram
+
+```
+App Starts
+    │
+    ▼
+Ask for name → Storage.load_user()
+    │
+    ├── Found → Restore User object + transactions from JSON
+    │
+    └── Not Found → Collect input → Create new User
+    │
+    ▼
+Run menu loop
+    │
+    ▼
+Choice == 'Save & Exit' → Storage.save_user() → Write to JSON → Exit
+```
+
+---
+
+
+## 1. What is Inheritance?
+
+Inheritance allows a **child class** to reuse the attributes and methods of a **parent class**, while also being able to add its own extra functionality.
+
+### Why use Inheritance?
+- Avoids repeating the same code across multiple classes (DRY — Don't Repeat Yourself)
+- Models real-world relationships naturally (e.g., a `Student` **is a** `Learner`)
+- Makes code easier to extend and maintain
+- Child classes can override parent behaviour when needed
+
+### Basic Syntax
 
 ```python
-def __init__(self, user, auth):
-    self.user = user        # passed in — exists outside Wallet
-    self.auth = auth        # passed in — exists outside Wallet
-    self.user_transactions = []  # created internally — owned by Wallet
+class Parent:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def display_info(self):
+        print(f"Name: {self.name}, Age: {self.age}")
+
+# Child inherits everything from Parent
+class Student(Parent):
+    pass
+
+class Employee(Parent):
+    pass
+
+student1 = Student("Alice", 20)
+employee1 = Employee("Bob", 30)
+
+student1.display_info()   # Name: Alice, Age: 20
+employee1.display_info()  # Name: Bob, Age: 30
 ```
 
-The rule: **pass in what already exists outside; create internally what only your class owns.**
+> The child class name is followed by the parent class name in parentheses: `class Child(Parent)`
 
-### `auth_required` Decorator
-A custom decorator inside `Wallet` that wraps transaction methods to enforce authentication before execution:
+---
+
+## 2. The `super()` Function
+
+When a child class defines its own `__init__`, it needs to explicitly call the parent's `__init__` using `super()` to make sure the parent's attributes are still initialized.
 
 ```python
-def auth_required(func):
-    def wrapper(self, *args, **kwargs):
-        if not self.auth.validate_user() or not self.auth.validate_transaction(...):
-            return False
-        return func(self, *args, **kwargs)
-    return wrapper
+class Student(Learner):
+    def __init__(self, name, age, student_id):
+        super().__init__(name, age)        # calls Learner's __init__
+        self.student_id = student_id       # adds Student-specific attribute
+
+    def display_student_info(self):
+        self.display_info()                # calls inherited method
+        print(f"Student ID: {self.student_id}")
+
+
+class Employee(Learner):
+    def __init__(self, name, age, employee_id):
+        super().__init__(name, age)
+        self.employee_id = employee_id
+
+    def display_employee_info(self):
+        self.display_info()
+        print(f"Employee ID: {self.employee_id}")
 ```
 
-### Static Methods
-`calculate_fee` is a `@staticmethod` — it's a utility that belongs to `Wallet` logically but needs no access to instance or class data:
+### Key Points about `super()`
+- `super().__init__()` calls the parent constructor — always include it when the child has its own `__init__`
+- Without it, the parent's attributes (`name`, `age`) will not be initialized
+- `super()` can also be used to call any parent method, not just `__init__`
+
+---
+
+## 3. Types of Inheritance
+
+### 3.1 Single Inheritance
+A child class inherits from **one** parent class. The most common and straightforward type.
 
 ```python
-calculate_fee = staticmethod(lambda amount: amount * 0.02)
+class Parent:
+    def greet(self):
+        print("Hello from Parent")
+
+class Child(Parent):
+    def respond(self):
+        print("Hello from Child")
+
+c = Child()
+c.greet()    # Hello from Parent
+c.respond()  # Hello from Child
 ```
 
 ---
 
-## 3. Persistent Storage — `storage.py`
+### 3.2 Multiple Inheritance
+A child class inherits from **two or more** parent classes. The child gains access to all methods from all parents.
 
-A new `Storage` class was added to persist user data across sessions using a `users.json` file.
+```python
+class Parent1:
+    def method1(self):
+        print("Method from Parent1")
 
-| Method | Purpose |
-|---|---|
-| `save_user(user, transactions)` | Saves/updates user data and transaction history to JSON |
-| `load_user(first_name, last_name)` | Loads existing user data by name key |
-| `_load_all()` | Internal helper to read the full JSON file |
+class Parent2:
+    def method2(self):
+        print("Method from Parent2")
 
-**Storage format — `users.json`:**
-```json
-{
-    "vinod_kumar": {
-        "first_name": "vinod",
-        "wallet_balance": 1500.0,
-        "transactions": [
-            {"amount": 490.0, "timestamp": "2025-01-01 10:00:00"}
-        ]
-    }
-}
+class Child(Parent1, Parent2):
+    def method3(self):
+        print("Method from Child")
+
+child = Child()
+child.method1()  # Method from Parent1
+child.method2()  # Method from Parent2
+child.method3()  # Method from Child
 ```
+
+> **Note:** When two parent classes have a method with the same name, Python uses the **MRO (Method Resolution Order)** — left to right in the class definition — to decide which one runs.
 
 ---
 
-## 4. Bugs Fixed During Session
+### 3.3 Multilevel Inheritance
+A class inherits from a parent, and then **another class inherits from that child**, forming a chain.
 
-| Bug | Cause | Fix |
-|---|---|---|
-| `TypeError: Wallet.__init__() takes 1 argument but 2 given` | `__init__` was missing the `user` parameter | Added `user` and `auth` as parameters |
-| `Wallet` calling `User()` internally | Treated `user` param as a class, not an object | Changed `self.user = User()` → `self.user = user` |
-| `display_info` showing old balance | `profile_info` dict stored a copy of balance at creation time | Removed `wallet_balance` from dict, read `self.wallet_balance` directly |
-| `update_profile` using positional arg | Called as `user1.update_profile(key, value)` but defined with `**kwargs` | Either fix the call or change method signature |
+```python
+class Grandparent:
+    def method1(self):
+        print("Method from Grandparent")
+
+class Parent(Grandparent):
+    def method2(self):
+        print("Method from Parent")
+
+class Child(Parent):
+    def method3(self):
+        print("Method from Child")
+
+child = Child()
+child.method1()  # Method from Grandparent  (inherited through chain)
+child.method2()  # Method from Parent
+child.method3()  # Method from Child
+```
+
+> Think of it as a **family tree**: grandchild inherits from parent who inherited from grandparent.
 
 ---
 
-## 5. Module Structure
+### 3.4 Hierarchical Inheritance
+**Multiple child classes** all inherit from the **same single parent** class.
 
-```
-wallet_package/
-│
-├── data.py          → User class
-├── auth.py          → Auth class
-├── transactions.py  → Wallet class
-├── log.py           → Logger class
-├── storage.py       → Storage class (new)
-└── exceptions.py    → Custom exceptions
+```python
+class Parent:
+    def method1(self):
+        print("Method from Parent")
 
-main.py              → Entry point
-users.json           → Persistent user data (auto-generated)
-transaction_log.json → Transaction logs (auto-generated)
+class Child1(Parent):
+    def method2(self):
+        print("Method from Child1")
+
+class Child2(Parent):
+    def method3(self):
+        print("Method from Child2")
+
+child1 = Child1()
+child2 = Child2()
+
+child1.method1()  # Method from Parent
+child1.method2()  # Method from Child1
+
+child2.method1()  # Method from Parent
+child2.method3()  # Method from Child2
 ```
+
+> Real-world analogy: `Car`, `Truck`, and `Bike` all inherit from a common `Vehicle` class.
+
+---
+
+### 3.5 Hybrid Inheritance
+A **combination** of two or more types of inheritance in a single program.
+
+```python
+class Grandparent:
+    def method1(self):
+        print("Method from Grandparent")
+
+class Parent1(Grandparent):
+    def method2(self):
+        print("Method from Parent1")
+
+class Parent2(Grandparent):
+    def method3(self):
+        print("Method from Parent2")
+
+class Child(Parent1, Parent2):     # multiple + multilevel combined
+    def method4(self):
+        print("Method from Child")
+
+child = Child()
+child.method1()  # Method from Grandparent
+child.method2()  # Method from Parent1
+child.method3()  # Method from Parent2
+child.method4()  # Method from Child
+```
+
+
+---
+
+### Summary Table: Inheritance Types
+
+| Type | Description | Example |
+|------|-------------|---------|
+| Single | One child, one parent | `Student(Learner)` |
+| Multiple | One child, many parents | `Child(Parent1, Parent2)` |
+| Multilevel | Chain of inheritance | `Child → Parent → Grandparent` |
+| Hierarchical | Many children, one parent | `Car, Truck, Bike(Vehicle)` |
+| Hybrid | Mix of the above types | Combination of multiple + multilevel |
+
+---

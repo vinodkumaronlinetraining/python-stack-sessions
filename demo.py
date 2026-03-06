@@ -798,3 +798,100 @@ import re
 # for name in user1:
 #     print(name)
 
+
+# record = {
+        
+#                  "first_name": "first_name",
+#                 "last_name": "last_name",
+#                 "address": "address",
+#                 "password": "password",
+#                 "wallet_balance": 100.0,
+#                 "is_active": True
+                
+# }
+
+# data = record["wallet_balance"]
+# print(data)
+
+# inheritance:
+# class Learner:
+#     def __init__(self, name, age):
+#         self.name = name
+#         self.age = age
+
+#     def dispaly_info(self):
+#         print(f" Name: {self.name}, Age: {self.age}")
+# # learner = Learner("vikas", 40)
+# class Student(Learner):
+#     pass
+
+# class Employee(Learner):
+#     pass
+
+# student1 = Student("vinod", 40)
+# student1.dispaly_info()
+
+# employee1 = Employee("Vikram", 40)
+# employee1.dispaly_info() 
+
+
+# class Learner:
+#     def __init__(self, name, age):
+#         self.name = name
+#         self.age = age
+
+#     def dispaly_info(self):
+#         print(f" Name: {self.name}, Age: {self.age}")
+
+
+# class Student(Learner):
+#     def __init__(self, name, age, student_id):
+#         super().__init__(name,age)
+#         self.student_id = student_id
+
+#     def display_student_info(self):
+#         self.dispaly_info()
+#         print(f"Student_id: {self.student_id}")
+
+# student1 = Student("vikas", 35, 1298)
+# student1.display_student_info()
+
+# # multiple:
+# class Parent1:
+#     def method_1(self):
+#         print("This is parent class 1")
+
+# class Parent2:
+#     def method_2(self):
+#         print("This is parent class 2")
+
+# class Child(Parent1,Parent2):
+#     def method(self):
+#         print("this is a child class")
+
+# child = Child()
+# child.method()
+# child.method_1()
+# child.method_2()
+
+
+# Multi level:
+class Grandparent:
+    def method_1(self):
+        print("this is a grand parent class")
+
+class Parent(Grandparent):
+    def method_2(self):
+        print("this is the parent class")
+
+class Child(Parent):
+    def method_3(self):
+        print("thios is child class")
+        super.metho
+
+child = Child()
+child.method_1()
+child.method_2()
+child.method_3()
+
+

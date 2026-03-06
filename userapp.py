@@ -2,19 +2,41 @@ from wallet_package.data import *
 from wallet_package.transactions import *
 from wallet_package.profile import *
 from wallet_package.auth import *
+from wallet_package.storage import *
 from datetime import datetime
 
 def main():
 
-    first_name = input("enter the first name: ")
-    last_name = input("Enter the last name: ")
-    address = input("Enter the Address: ")
-    password = input("Enter the password: ")
+    # first_name = input("enter the first name: ")
+    # last_name = input("Enter the last name: ")
+    # address = input("Enter the Address: ")
+    # password = input("Enter the password: ")
 
-    user1 = User(first_name, last_name, address, password)
+    # user1 = User(first_name, last_name, address, password)
+
+    # auth = Auth()
+    # wallet = Wallet(user1,auth)
+    print("Welcome to wallet app!")
+    first_name = input("Enter the first_name: ")
+    last_name = input("Enter the last_name: ")
+
+    record, transactions = Storage.load_user(first_name,last_name)
+
+    if record:
+        print(f"Welcome back,{first_name}")
+        user1 = User(record["first_name"], record["last_name"], record["address"], record["password"])
+        user1.wallet_balance = record["wallet_balance"]
+        user1.is_active = record["is_active"]
+    else:
+        address = input("Enter the address: ")
+        password = input("Enter the password: ")
+        user1 = User(first_name,last_name,address,password)
+        transactions = []
 
     auth = Auth()
     wallet = Wallet(user1,auth)
+    wallet.user_transactions = transactions
+    
 
     while True:
         print("1. Addtransaction ")
@@ -22,7 +44,7 @@ def main():
         print("3. Change password")
         print("4. Upadte profile")
         print("5. display user info")
-        print("6. exit")
+        print("6. save and exit")
 
         choice = input("Enter the choice: ")
 
@@ -43,6 +65,7 @@ def main():
         elif choice == '5':
             user1.display_info()
         elif choice == '6':
+            Storage.save_user(user1, wallet.user_transactions)
             print("Exiting menu ...")
             break
         else:
