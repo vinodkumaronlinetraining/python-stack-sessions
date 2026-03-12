@@ -7,7 +7,11 @@ from wallet_package.exceptions import *
 
 class Wallet:
 
-    calculate_fee = staticmethod(lambda amount: amount * 0.05)
+    calculate_fee = staticmethod(lambda amount, fee_rate: amount * fee_rate)
+
+
+    def get_limit(self):
+        return self.user.get_transaction_limit()
 
     def __init__(self,User,Auth):
         self.user = User
@@ -74,9 +78,9 @@ class Wallet:
         
         print("-------------------\n")
         try:
-            fee = self.calculate_fee(new_transaction)
+            fee = self.calculate_fee(new_transaction, self.user.get_fee_rate())
             
-            if new_transaction < 10000:
+            if new_transaction < self.get_limit():
                 if type == "debit":
                     total_amount = new_transaction +fee
                     total_amount = - total_amount
@@ -92,7 +96,7 @@ class Wallet:
 
                 Logger.log_transaction(action=f"{type} Transaction", amount=total_amount)
             else:
-                print("user inactive or limit reached")
+                print(f"user inactive or limit reached: {self.get_limit()}")
                 Logger.log_transaction(action="Transaction failed",amount=new_transaction )
 
         except TypeError as e:
@@ -142,3 +146,25 @@ class Wallet:
     # # print(f"second: {next(gen)}")
 
 
+class PremiumWallet(Wallet):
+    def get_fee(self, amount):
+        return self.calculate_fee(amount, self.user.get_fee_rate())
+    
+    def add_transaction(self, new_transaction, type="credit"): # overridden
+        new_transaction = float(new_transaction)
+        super().add_transaction(new_transaction, type)
+        if self.user.account_type == "Premium":
+            self.user.add_cashback(new_transaction)
+
+    def add_interst(self, rate):
+        if self.user.account_type == "Premium":
+            rate += 0.01
+        super().add_interst(rate)
+
+    def debit_penalty(self):
+        if self.user.account_type == "Premium":
+            penalty = 25
+            self.user.wallet_balance -= penalty
+            print(f"Penalty of {penalty}, new balance is : {self.user.wallet_balance}")
+        else:
+            super().debit_penalty()

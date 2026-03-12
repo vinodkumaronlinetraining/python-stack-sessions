@@ -875,23 +875,359 @@ import re
 # child.method_2()
 
 
-# Multi level:
-class Grandparent:
-    def method_1(self):
-        print("this is a grand parent class")
+# # Multi level:
+# class Grandparent:
+#     def method_1(self):
+#         print("this is a grand parent class")
 
-class Parent(Grandparent):
-    def method_2(self):
-        print("this is the parent class")
+# class Parent(Grandparent):
+#     def method_2(self):
+#         print("this is the parent class")
 
-class Child(Parent):
-    def method_3(self):
-        print("thios is child class")
-        super.metho
+# class Child(Parent):
+#     def method_3(self):
+#         print("thios is child class")
+#         super.metho
 
-child = Child()
-child.method_1()
-child.method_2()
-child.method_3()
+# child = Child()
+# child.method_1()
+# child.method_2()
+# child.method_3()
 
 
+# class Learner:
+#     def __init__(self, name, age): # parent
+#         self.name = name
+#         self.age = age
+
+#     def display_info(self):
+#         print(f" Name: {self.name}, Age: {self.age}")
+
+# # Learner1 = Learner("vinod", 35)
+# # Learner1.display_info()
+        
+# class Student(Learner): # child
+#     def __init__(self, name, age, student_id):
+#         super().__init__(name, age)
+#         self.student_id = student_id
+
+#     def display_student_info(self):
+#         super().display_info()
+#         print(f"Student Identity: {self.student_id}")
+
+
+# student1 = Student("vikas", 40, 10002)
+# student1.display_student_info()
+
+# class Bank:
+#     def __init__(self, name):
+#         self.name = name
+
+#     def display_bank_info(self):
+#         print(f"Bank Name: {self.name}")
+
+# class SavingsAccount(Bank):
+#     def __init__(self, name, intrest_rate):
+#         super().__init__(name)
+#         self.intrest_rate = intrest_rate
+
+#     def display_account_info(self):
+#         self.display_bank_info()
+#         print(f"Intrest rate : {self.intrest_rate}")
+
+# class CurrentAccount(Bank):
+#     def __init__(self, name, account_limit):
+#         super().__init__(name)
+#         self.account_limit = account_limit
+
+#     def display_account_info(self):
+#         self.display_bank_info()
+#         print(f"Account limit: {self.account_limit}")
+
+# class PremiumSavingsAccount(SavingsAccount):
+#     def __init__(self, name, intrest_rate, premium_features):
+#         super().__init__(name, intrest_rate)
+#         self.premium_features = premium_features
+
+#     def display_premium_account_info(self):
+#         super().display_account_info()
+#         print(f"Premium Features: {self.premium_features}")
+
+# savings_account = SavingsAccount("SBI Bank", 0.05)
+# savings_account.display_account_info()
+# premium_account = PremiumSavingsAccount("HDFC Bank", 0.05, ["Priority service", "Transaction cashback"])
+# premium_account.display_premium_account_info()
+
+
+# method overriding:
+# class Bank:
+#     def __init__(self, name):
+#         self.name = name
+
+#     def display_info(self):
+#         print(f"Bank Name: {self.name}")
+
+# class SavingsAccount(Bank):
+#     def __init__(self, name, intrest_rate):
+#         super().__init__(name)
+#         self.intrest_rate = intrest_rate
+
+#     def display_info(self):  # method overriding
+#         super().display_info()
+#         print(f"Interst Rate: {self.intrest_rate}")
+
+# class CurrentAccount(Bank):
+#     def __init__(self, name, limit):
+#         super().__init__(name)
+#         self.limit = limit
+
+#     def display_info(self):
+#         super().display_info()
+#         print(f"The Account Limit: {self.limit}")
+
+# bank = Bank("ICICI")
+# saving_account = SavingsAccount("SBI", 0.05)
+# current_account = CurrentAccount("HDFC", 10000)
+# bank.display_info()
+
+
+
+# class PDF:
+#     def export(self):
+#         print(" Exporting a PDF Document")
+
+# class Excel:
+#     def export(self):
+#         print("Exporting an Excel document")
+
+# class Word:
+#     def export(self):
+#         print("Exporting a Word Doc")
+
+
+# class CSV:
+#     def save(self):
+#         print(" Saving CSV File")
+
+# def export_report(exporter):
+#     exporter.export()  # pdf.export
+# pdf = PDF()
+# export_report(pdf)    # PDF().export()
+# export_report(Excel())
+# export_report(Word())
+# export_report(CSV())
+
+# class CreditCard:
+#     def pay(self, amount):
+#         print(f"Paid Amount: {amount} using creditcard")
+
+# class Upi:
+#     def pay(self, amount):
+#         print(f"Paid Amount: {amount} using UPI")
+
+# class Crypto:
+#     def pay(self, amount):
+#         print(f"Paid Amount: {amount} using crypto")
+
+# class InvalidPayment:
+#     def send(self, amount):
+#         print(f"{amount} needs to be paid")
+
+# def process_payment(payment_method, amount):
+#     payment_method.pay(amount)
+
+
+# process_payment(InvalidPayment(), 500)
+
+
+# class BankAccount:
+#     def __init__(self, owner, balance):
+#         self.owner = owner
+#         self.balance = balance
+
+#     def display_info(self):
+#         print(f"Owner Name: {self.owner}")
+#         print(f"Balance: {self.balance}")
+
+#     def apply_intrest(self):
+#         print("no interst added to this basic account")
+
+#     def apply_penalty(self):
+#         print(" No penalty for this basic account")
+
+# class SavingsAccount(BankAccount):
+#     def __init__(self, owner, balance, intrest_rate):
+#         super().__init__(owner, balance)
+#         self.intrest_rate = intrest_rate
+
+#     def display_info(self):
+#         super().display_info()
+#         print(f"Type: Savings")
+#         print(f" Rate: {self.intrest_rate}")
+
+#     def apply_intrest(self):
+#         intrest_amt = self.balance * self.intrest_rate
+#         self.balance += intrest_amt
+#         print(f"Intrest {intrest_amt} added, New balance : {self.balance}")
+
+#     def apply_penalty(self):
+#         print(f"Savings account has no penalty charged")
+
+# class CurrentAccount(BankAccount):
+#     def __init__(self, owner, balance, limit):
+#         super().__init__(owner, balance)
+#         self.limit = limit
+
+#     def display_info(self):
+#         super().display_info()
+#         print(f"Type: Current")
+#         print(f" Account Limit: {self.limit}")
+
+#     def apply_intrest(self):
+#         pass
+
+#     def apply_penalty(self):
+#         penalty = 100
+#         self.balance -= penalty
+#         print(f"Penalty {penalty} applied. New Balance: {self.balance}")
+
+# savings = SavingsAccount("vinod", 10000, 0.02)
+# current = CurrentAccount("vikas", 15000, 5000)
+
+# # print("---------savings-----\n")
+# # savings.dispaly_info()
+# # savings.apply_interst()
+
+# # print("------------current---------\n")
+# # current.display_info()
+# # current.apply_penalty()
+
+
+# def print_account_info(account):
+#     account.display_info()
+
+
+# def process_month_end(account):
+
+#     account.apply_intrest()
+#     account.apply_penalty()
+
+
+# print("----------checking ducktyping----------\n")
+
+# print_account_info(savings)
+# print_account_info(current)
+
+
+# process_month_end(savings)
+# print("------------------")
+# process_month_end(current)
+
+
+# class CreditCard:
+#     def pay(self, amount):
+#         print(f"Paid Amount: {amount} using creditcard")
+
+# class Upi:
+#     def pay(self, amount):
+#         print(f"Paid Amount: {amount} using UPI")
+
+# class Crypto:
+#     def pay(self, amount):
+#         print(f"Paid Amount: {amount} using crypto")
+
+# class InvalidPayment:
+#     def send(self, amount):
+#         print(f"{amount} needs to be paid")
+
+#     # def pay(self, amount):
+#     #     print(" this is cash payment recieved: ", amount)
+
+# def process_payment(payment_method, amount): # process_payment(cash, 300)
+#     payment_method.send(amount)  # cash.pay(300)
+
+
+# credit_card = CreditCard()
+# upi = Upi()
+# cash = InvalidPayment()
+# crypto = Crypto()
+# credit_card.pay(400)
+# upi.pay(500)
+# crypto.pay(450)
+# cash.send(500)
+# cash.pay(500)
+
+# process_payment(InvalidPayment(), 300)
+# process_payment(CreditCard(), 500)
+# process_payment(Upi(),450)
+# process_payment(Crypto(),200)
+
+
+
+
+class BankAccount:
+    def __init__(self, name, balance):
+        self.name = name
+        self.balance = balance
+
+    def deposit(self, amount, note=None):
+        self.balance += amount
+        print(f"Deposited Rs.{amount}. Balance : Rs.{self.balance}")
+        if note:
+            print(f"Note: {note}")
+
+    def __str__(self):
+        return f"{self.name} , Balance: Rs.{self.balance}"
+    
+class SavingsAccount(BankAccount):
+    def __init__(self, name, balance, intrest_rate):
+        super().__init__(name, balance)
+        self.intrest_rate = intrest_rate
+
+    def apply_intrest(self, months=1, compound=False):
+        if compound:
+            self.balance = self.balance * (1 + self.intrest_rate) ** months
+            print(f"Compound intrest for {months} months. Balance: Rs. {self.balance}")
+        else:
+            intrest = self.balance * self.intrest_rate * months
+            self.balance += intrest
+            print(f"Simple intrest for {months} months. Balance : Rs.{self.balance}")
+
+    def __str__(self):
+        return f"Savings account: {self.name}. Balance: {self.balance}. Intrest Rate: {self.intrest_rate}"
+    
+class CurrentAccount(BankAccount):
+    def __init__(self, name, balance, limit):
+        super().__init__(name, balance)
+        self.limit = limit
+
+    def withdraw(self, amount, reason=None):
+        if amount > self.limit:
+            print("Exceeds limit")
+            return
+        else:
+            self.balance -= amount
+            print(f"Withdrawn: {amount}. Balance: {self.balance}")
+        if self.balance < 0:
+            print("Cannot process Transaction")
+        if reason:
+            print(f"Reason: {reason}")
+
+    def __str__(self):
+        return f"Current Account: {self.name}. Balance: Rs.{self.balance}. Limit: {self.limit}"
+    
+savings_account = SavingsAccount("vinod", 10000, 0.05)
+
+# where the function or method implementation remains same , but acts different based on paramenters,= overloading
+savings_account.apply_intrest()
+savings_account.apply_intrest(5)
+savings_account.apply_intrest(6, True)
+print("--------------------------------------\n")
+current_account = CurrentAccount("vikas", 20000, 3000)
+
+current_account.withdraw(2000)
+current_account.withdraw(3000, "E.bill")
+current_account.withdraw(5000)
+
+print(savings_account)
+print(current_account)

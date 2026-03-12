@@ -1,268 +1,299 @@
-# Wallet App — Session Summary
-
-# Python Learning Series — Session 7
-# Object-Oriented Programming: Inheritance & JSON Storage
+# Python Learning Series — Session 8
+# Polymorphism, Method Overriding, Duck Typing & Overloading
 
 ---
 
-
-
-## . JSON File Storage with a Storage Class
-
-Instead of re-entering data every time the program runs, we can **persist data to a JSON file** and reload it on startup.
-
-### Why JSON?
-- Human-readable format
-- Built-in Python support via the `json` module
-- Easy to save and load dictionaries and lists
-- Works well for storing structured data like user profiles and transactions
-
-
-
-### Key Design Decisions
-- `FILE_PATH` as a **class variable** means it's shared across all calls and easy to change in one place
-- `_load_all()` is a **private static method** (prefixed with `_`) — it's a helper not meant to be called from outside the class
-- The **first name + last name** combination is used as a unique dictionary key
-- `datetime` objects are **serialized to strings** before saving (JSON cannot store datetime objects natively) and **parsed back** when loading
-- All methods use `try/except` to handle file errors gracefully
+## Table of Contents
+1. [What is Polymorphism?](#1-what-is-polymorphism)
+2. [Method Overriding](#2-method-overriding)
+3. [Duck Typing](#3-duck-typing)
+4. [Built-in Polymorphism](#4-built-in-polymorphism)
+5. [Overloading in Python](#5-overloading-in-python)
+6. [Polymorphism in the Wallet App](#6-polymorphism-in-the-wallet-app)
+7. [Assessment 8 — Product App Tasks](#7-assessment-8--product-app-tasks)
 
 ---
 
+## 1. What is Polymorphism?
 
-### Flow Diagram
+**Polymorphism** means "many forms." It is the ability of different objects to respond to the **same method call** in their **own way**.
 
-```
-App Starts
-    │
-    ▼
-Ask for name → Storage.load_user()
-    │
-    ├── Found → Restore User object + transactions from JSON
-    │
-    └── Not Found → Collect input → Create new User
-    │
-    ▼
-Run menu loop
-    │
-    ▼
-Choice == 'Save & Exit' → Storage.save_user() → Write to JSON → Exit
+In Python, polymorphism is achieved through:
+- **Method Overriding** — child class redefines a parent method
+- **Duck Typing** — any object can be passed to a function as long as it has the expected method
+- **Overloading** — same method behaves differently based on the arguments passed
+
+### Why does it matter?
+Without polymorphism, you would write separate functions for every type:
+```python
+# Without polymorphism — messy, hard to scale
+def process_savings(account): ...
+def process_current(account): ...
+def process_loan(account):    ...
+
+# With polymorphism — one function works for all
+def process_month_end(account):
+    account.apply_interest()   # each type handles it its own way
+    account.apply_penalty()
 ```
 
 ---
 
+## 2. Method Overriding
 
-## 1. What is Inheritance?
+When a **child class** provides its own implementation of a method that already exists in the **parent class**, this is called **method overriding**.
 
-Inheritance allows a **child class** to reuse the attributes and methods of a **parent class**, while also being able to add its own extra functionality.
+The child's version **replaces** the parent's version for objects of that child class. You can still call the parent's version using `super()`.
 
-### Why use Inheritance?
-- Avoids repeating the same code across multiple classes (DRY — Don't Repeat Yourself)
-- Models real-world relationships naturally (e.g., a `Student` **is a** `Learner`)
-- Makes code easier to extend and maintain
-- Child classes can override parent behaviour when needed
-
-### Basic Syntax
+### Example — Bank Accounts
 
 ```python
-class Parent:
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
+class BankAccount:
+    def __init__(self, owner, balance):
+        self.owner = owner
+        self.balance = balance
 
-    def display_info(self):
-        print(f"Name: {self.name}, Age: {self.age}")
+    def apply_interest(self):
+        print("No interest for base account")   # parent default
 
-# Child inherits everything from Parent
-class Student(Parent):
-    pass
+    def apply_penalty(self):
+        print("No penalty for base account")    # parent default
 
-class Employee(Parent):
-    pass
 
-student1 = Student("Alice", 20)
-employee1 = Employee("Bob", 30)
+class SavingsAccount(BankAccount):
+    def __init__(self, owner, balance, interest_rate):
+        super().__init__(owner, balance)
+        self.interest_rate = interest_rate
 
-student1.display_info()   # Name: Alice, Age: 20
-employee1.display_info()  # Name: Bob, Age: 30
+    def apply_interest(self):                   # OVERRIDES parent
+        interest = self.balance * self.interest_rate
+        self.balance += interest
+        print(f"Interest ₹{interest:.2f} added. New balance: ₹{self.balance:.2f}")
+
+    def apply_penalty(self):                    # OVERRIDES parent
+        print("Savings accounts have no penalty.")
+
+
+class CurrentAccount(BankAccount):
+    def apply_interest(self):                   # OVERRIDES parent
+        print("Current accounts earn no interest.")
+
+    def apply_penalty(self):                    # OVERRIDES parent
+        penalty = 100
+        self.balance -= penalty
+        print(f"Penalty ₹{penalty} applied. New balance: ₹{self.balance:.2f}")
+
+
+class LoanAccount(BankAccount):
+    def __init__(self, owner, balance, loan_rate):
+        super().__init__(owner, balance)
+        self.loan_rate = loan_rate
+
+    def apply_interest(self):                   # OVERRIDES parent — interest = more debt
+        interest = self.balance * self.loan_rate
+        self.balance += interest
+        print(f"Loan interest ₹{interest:.2f} added. Outstanding: ₹{self.balance:.2f}")
+
+    def apply_penalty(self):                    # OVERRIDES parent
+        penalty = self.balance * 0.05
+        self.balance += penalty
+        print(f"Late penalty ₹{penalty:.2f} applied. Outstanding: ₹{self.balance:.2f}")
 ```
 
-> The child class name is followed by the parent class name in parentheses: `class Child(Parent)`
+### Key Rules for Method Overriding
+- The method name in the child **must match exactly** the parent's method name
+- Use `super().method_name()` to call the parent's version first if you need it
+- Python decides which version to run based on the **type of the object** at runtime
 
 ---
 
-## 2. The `super()` Function
+## 3. Duck Typing
 
-When a child class defines its own `__init__`, it needs to explicitly call the parent's `__init__` using `super()` to make sure the parent's attributes are still initialized.
+> *"If it walks like a duck and quacks like a duck, it's a duck."*
+
+Duck typing means Python **does not check the type** of an object — it only checks whether the object **has the method being called**. If it does, it works. If it doesn't, it raises an `AttributeError`.
+
+### Example — Export Reports
 
 ```python
-class Student(Learner):
-    def __init__(self, name, age, student_id):
-        super().__init__(name, age)        # calls Learner's __init__
-        self.student_id = student_id       # adds Student-specific attribute
+class PDF:
+    def export(self):
+        print("Exporting as PDF")
 
-    def display_student_info(self):
-        self.display_info()                # calls inherited method
-        print(f"Student ID: {self.student_id}")
+class Excel:
+    def export(self):
+        print("Exporting as Excel")
+
+class CSV:
+    def export(self):
+        print("Exporting as CSV")
+
+class Word:
+    def save(self):             # different method name — NOT export()
+        print("Saving Word doc")
 
 
-class Employee(Learner):
-    def __init__(self, name, age, employee_id):
-        super().__init__(name, age)
-        self.employee_id = employee_id
+def export_report(exporter):    # doesn't care about the type — only about .export()
+    exporter.export()
 
-    def display_employee_info(self):
-        self.display_info()
-        print(f"Employee ID: {self.employee_id}")
+
+export_report(PDF())            # ✅ works
+export_report(Excel())          # ✅ works
+export_report(CSV())            # ✅ works
+export_report(Word())           # ❌ AttributeError — no export() method
 ```
 
-### Key Points about `super()`
-- `super().__init__()` calls the parent constructor — always include it when the child has its own `__init__`
-- Without it, the parent's attributes (`name`, `age`) will not be initialized
-- `super()` can also be used to call any parent method, not just `__init__`
-
----
-
-## 3. Types of Inheritance
-
-### 3.1 Single Inheritance
-A child class inherits from **one** parent class. The most common and straightforward type.
+### Example — Payment Processing
 
 ```python
-class Parent:
-    def greet(self):
-        print("Hello from Parent")
+class CreditCard:
+    def pay(self, amount):
+        print(f"Paid ₹{amount} using Credit Card")
 
-class Child(Parent):
-    def respond(self):
-        print("Hello from Child")
+class UPI:
+    def pay(self, amount):
+        print(f"Paid ₹{amount} using UPI")
 
-c = Child()
-c.greet()    # Hello from Parent
-c.respond()  # Hello from Child
+class Crypto:
+    def pay(self, amount):
+        print(f"Paid ₹{amount} using Bitcoin")
+
+
+def process_payment(payment_method, amount):
+    payment_method.pay(amount)      # works for any object that has pay()
+
+
+process_payment(CreditCard(), 500)  # ✅
+process_payment(UPI(), 500)         # ✅
+process_payment(Crypto(), 500)      # ✅
+```
+
+### Duck Typing vs isinstance() check
+```python
+# Without duck typing — rigid, needs updating for every new class
+def process_payment(method, amount):
+    if isinstance(method, CreditCard):
+        method.pay(amount)
+    elif isinstance(method, UPI):
+        method.pay(amount)
+    # have to keep adding elif for every new payment type...
+
+# With duck typing — flexible, works for any future class too
+def process_payment(method, amount):
+    method.pay(amount)   # just call it — if it has pay(), it works
 ```
 
 ---
 
-### 3.2 Multiple Inheritance
-A child class inherits from **two or more** parent classes. The child gains access to all methods from all parents.
+## 4. Built-in Polymorphism
+
+Python's own operators and functions already use polymorphism — the same symbol or function does different things depending on the type:
 
 ```python
-class Parent1:
-    def method1(self):
-        print("Method from Parent1")
+# + operator behaves differently per type
+print(10 + 20)              # 30          — arithmetic addition
+print("hello" + " world")   # hello world — string concatenation
+print([1, 2] + [3, 4])      # [1, 2, 3, 4] — list merge
 
-class Parent2:
-    def method2(self):
-        print("Method from Parent2")
-
-class Child(Parent1, Parent2):
-    def method3(self):
-        print("Method from Child")
-
-child = Child()
-child.method1()  # Method from Parent1
-child.method2()  # Method from Parent2
-child.method3()  # Method from Child
+# len() works on different types
+print(len("hello"))         # 5  — characters in string
+print(len([1, 2, 3]))       # 3  — items in list
+print(len({1, 2, 3, 4}))    # 4  — items in set
 ```
 
-> **Note:** When two parent classes have a method with the same name, Python uses the **MRO (Method Resolution Order)** — left to right in the class definition — to decide which one runs.
+This works because each type defines its own dunder methods (`__add__`, `__len__`, etc.) that Python calls automatically — which is itself a form of method overriding on built-in types.
 
 ---
 
-### 3.3 Multilevel Inheritance
-A class inherits from a parent, and then **another class inherits from that child**, forming a chain.
+## 5. Overloading in Python
+
+**Overloading** means the same method behaves differently based on the **arguments passed to it**. Python achieves this using **default arguments** — the method adapts its behavior depending on what parameters are provided.
 
 ```python
-class Grandparent:
-    def method1(self):
-        print("Method from Grandparent")
+class SavingsAccount(BankAccount):
+    def apply_interest(self, months=1, compound=False):
+        if compound:
+            self.balance = self.balance * (1 + self.interest_rate) ** months
+            print(f"Compound interest for {months} months. Balance: ₹{self.balance:.2f}")
+        else:
+            interest = self.balance * self.interest_rate * months
+            self.balance += interest
+            print(f"Simple interest for {months} months. Balance: ₹{self.balance:.2f}")
 
-class Parent(Grandparent):
-    def method2(self):
-        print("Method from Parent")
 
-class Child(Parent):
-    def method3(self):
-        print("Method from Child")
+savings = SavingsAccount("Vinod", 10000, 0.05)
 
-child = Child()
-child.method1()  # Method from Grandparent  (inherited through chain)
-child.method2()  # Method from Parent
-child.method3()  # Method from Child
+savings.apply_interest()           # default: simple, 1 month
+savings.apply_interest(5)          # simple interest for 5 months
+savings.apply_interest(6, True)    # compound interest for 6 months
 ```
 
-> Think of it as a **family tree**: grandchild inherits from parent who inherited from grandparent.
+### Overloading vs Overriding — Side-by-side
+
+| | Overriding | Overloading |
+|---|---|---|
+| **Where** | Child class redefines parent's method | Same class, same method, different parameters |
+| **How** | Different class, same method name | Same method, different arguments |
+| **Python mechanism** | Inheritance + `super()` | Default arguments |
+| **Example** | `SavingsAccount.apply_interest()` replaces `BankAccount.apply_interest()` | `apply_interest(months=1, compound=False)` adapts behavior per args |
 
 ---
 
-### 3.4 Hierarchical Inheritance
-**Multiple child classes** all inherit from the **same single parent** class.
+## 6. Polymorphism in the Wallet App
+
+### data.py — `PremiumUser` overrides `User`
 
 ```python
-class Parent:
-    def method1(self):
-        print("Method from Parent")
+class User:
+    def get_transaction_limit(self):
+        return 10000           # Standard: ₹10,000 limit
 
-class Child1(Parent):
-    def method2(self):
-        print("Method from Child1")
+    def get_fee_rate(self):
+        return 0.02            # Standard: 2% fee
 
-class Child2(Parent):
-    def method3(self):
-        print("Method from Child2")
+    def get_account_summary(self):
+        print(f"[Standard Account] {self.first_name} {self.last_name}")
+        print(f"  Balance: ₹{self.wallet_balance:.2f}")
 
-child1 = Child1()
-child2 = Child2()
 
-child1.method1()  # Method from Parent
-child1.method2()  # Method from Child1
+class PremiumUser(User):
+    def get_transaction_limit(self):
+        return 50000           # Premium: ₹50,000 limit (OVERRIDES)
 
-child2.method1()  # Method from Parent
-child2.method3()  # Method from Child2
+    def get_fee_rate(self):
+        return 0.01            # Premium: 1% fee (OVERRIDES)
+
+    def get_account_summary(self):                    # OVERRIDES parent
+        print(f"[Premium Account] {self.first_name} {self.last_name}")
+        print(f"  Balance : ₹{self.wallet_balance:.2f}")
+        print(f"  Cashback: ₹{self.cashback_balance:.2f}")
 ```
 
-> Real-world analogy: `Car`, `Truck`, and `Bike` all inherit from a common `Vehicle` class.
-
----
-
-### 3.5 Hybrid Inheritance
-A **combination** of two or more types of inheritance in a single program.
+### transactions.py — Duck Typing in `Wallet`
 
 ```python
-class Grandparent:
-    def method1(self):
-        print("Method from Grandparent")
+class Wallet:
+    def get_fee(self, amount):
+        return self.calculate_fee(amount, self.user.get_fee_rate())
+        # get_fee_rate() — Python calls the right version automatically
+        # User → 2%,  PremiumUser → 1%
 
-class Parent1(Grandparent):
-    def method2(self):
-        print("Method from Parent1")
+    def get_limit(self):
+        return self.user.get_transaction_limit()
+        # User → 10000,  PremiumUser → 50000
+```
 
-class Parent2(Grandparent):
-    def method3(self):
-        print("Method from Parent2")
+### main.py — Same function works for both wallet types
 
-class Child(Parent1, Parent2):     # multiple + multilevel combined
-    def method4(self):
-        print("Method from Child")
-
-child = Child()
-child.method1()  # Method from Grandparent
-child.method2()  # Method from Parent1
-child.method3()  # Method from Parent2
-child.method4()  # Method from Child
+```python
+def process_transaction(wallet):
+    """Duck typing — works with both Wallet and PremiumWallet"""
+    amount = input("Enter transaction amount: ")
+    t_type = input("Enter transaction type (credit/debit): ")
+    wallet.add_transaction(amount, t_type)   # correct behavior auto-selected
 ```
 
 
----
-
-### Summary Table: Inheritance Types
-
-| Type | Description | Example |
-|------|-------------|---------|
-| Single | One child, one parent | `Student(Learner)` |
-| Multiple | One child, many parents | `Child(Parent1, Parent2)` |
-| Multilevel | Chain of inheritance | `Child → Parent → Grandparent` |
-| Hierarchical | Many children, one parent | `Car, Truck, Bike(Vehicle)` |
-| Hybrid | Mix of the above types | Combination of multiple + multilevel |
 
 ---
+

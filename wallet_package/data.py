@@ -11,13 +11,18 @@ class User:
         self.password = password
         self.wallet_balance = 1000.0
         self.is_active = True
+        self.account_type = "Standard"
         self.profile_info = {
             "first_name": first_name,
             "last_name": last_name,
             "address": address
         }
 
-
+    def get_transaction_limit(self):  # original method
+        return 10000                # this is the limit for standard account
+    
+    def get_fee_rate(self):  # original method
+        return 0.02         # this is for the standard user
 
     def change_password(self, new_password):
     
@@ -34,6 +39,11 @@ class User:
             print(f"UnKnown Error Caught: {e}")
         finally:
             print("the change_password function is attempted here")
+
+    def get_account_summary(self):
+        print(f"[Standard Account] {self.first_name} {self.last_name}")
+        print(f"Balance: Rs.{self.wallet_balance:.2f}")
+        print(f" Status: { 'Active ' if self.is_active else 'Inactive'}")
 
 
     def update_profile(self,key,value):
@@ -65,3 +75,29 @@ class User:
             print("Error Caught:", e)
 
 
+class PremiumUser(User):
+    def __init__(self, first_name, last_name, address, password):
+        super().__init__(first_name, last_name, address, password)
+        self.account_type = "Premium"
+        self.cashback_balance = 0.0
+
+    def get_transaction_limit(self):  # method overriding
+        return 50000       # limit modified in the premium class method
+    
+    def get_fee_rate(self):  # method over riding
+        return 0.01        # modified fee rate in the premium class method
+    
+    def add_cashback(self, amount):
+        cashback = amount * 0.05
+        self.cashback_balance += cashback
+
+    def get_account_summary(self):   # over ridden
+        print(f"[Premium Account] {self.first_name} {self.last_name}")
+        print(f"Balance: Rs.{self.wallet_balance}")
+        print(f" Cashback: {self.cashback_balance}")
+        print(f" Status: {'Active' if self.is_active else 'Inactive'}")
+
+    def display_info(self):
+        super().display_info()
+        print(f"Account_type: {self.account_type}")
+        print(f"Cashback_balance: {self.cashback_balance}")

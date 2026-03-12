@@ -23,17 +23,19 @@ class Storage:
                 "password": user.password,
                 "wallet_balance": user.wallet_balance,
                 "is_active": user.is_active,
+                "account_type": user.account_type,
+                "cashback_balance": getattr(user, "cashback_balance", 0.0),
                 "transactions": [
                     {"amount": amt, "timestamp": ts.strftime('%Y-%m-%d %H:%M:%S')} for amt, ts in transactions
                 ]
             }
             with open(Storage.FILE_PATH, 'w') as f:
-                json.dump(data, f)
+                json.dump(data, f, )
             print("user data saved successfully")
         except Exception as e:
             print("Error caught:",e)
 
-        
+    @staticmethod    
     def load_user(first_name, last_name):
         try:
             data = Storage.load_users()
