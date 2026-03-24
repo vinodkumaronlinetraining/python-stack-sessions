@@ -69,9 +69,10 @@ def main():
 
         elif choice == '2':
             wallet.account_history()
+            wallet.sort_transactions()
         elif choice == '3':
             new_password = input("Enter the new password: ")
-            user1.change_password(new_password)
+            user1.set_password(new_password)
         elif choice == '4':
             key = input("Enter the attribute to be updated (first_name, last_name, address): ")
             value = input(f"Enter the value for {key}: ")

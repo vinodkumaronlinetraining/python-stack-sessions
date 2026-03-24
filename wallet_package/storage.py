@@ -20,7 +20,7 @@ class Storage:
                 "first_name": user.first_name,
                 "last_name": user.last_name,
                 "address": user.address,
-                "password": user.password,
+                "password": user._password_for_storage,
                 "wallet_balance": user.wallet_balance,
                 "is_active": user.is_active,
                 "account_type": user.account_type,

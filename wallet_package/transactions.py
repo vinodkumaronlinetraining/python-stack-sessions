@@ -16,10 +16,18 @@ class Wallet:
     def __init__(self,User,Auth):
         self.user = User
         self.auth = Auth
-        self.user_transactions = []
+        self.__user_transactions = []
 
     
-
+    @property
+    def user_transactions(self):
+        return list(self.__user_transactions)
+    
+    @user_transactions.setter
+    def user_transactions(self, transactions):
+        if not isinstance(transactions, list):
+            raise ValueError("Transactions is not list")
+        self.__user_transactions = transactions
    
 
     def debit_penalty(self):
@@ -87,11 +95,11 @@ class Wallet:
                 else:
                     total_amount = new_transaction - fee
                 print("the initial balance: ",self.user.wallet_balance)
-                self.user_transactions.append((total_amount, datetime.now() ))
+                self.__user_transactions.append((total_amount, datetime.now() ))
                 self.user.wallet_balance += total_amount
                 print("updated balance: ", self.user.wallet_balance)
                 print(f"the transaction fee is {fee}")
-                print("the updated user transactions list: ",self.user_transactions)
+                print("the updated user transactions list: ",self.__user_transactions)
                 # print("The user transactions array",user_transactions_array)
 
                 Logger.log_transaction(action=f"{type} Transaction", amount=total_amount)
@@ -117,12 +125,38 @@ class Wallet:
             if not self.user_transactions:
                 print("No transactions found")
                 return
-            for amount, timestamp in self.user_transactions:
+            for amount, timestamp in self.__user_transactions:
                 print(f"Amount: {amount}, Time: {timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
         except Exception as e:
             print("Error Caught:",e)
 
+    def sort_transactions(self):
+        transactions = self.__user_transactions
+        n = len(transactions)
 
+        if n==0:
+            print("No transactions")
+            return
+        
+        def quick_sort(arr):
+            if len(arr) <=1:
+                return arr
+            else: 
+                pivot = arr[len(arr)//2]
+                pivot_amount = pivot[0]
+
+                left = [x for x in arr if x[0] < pivot_amount]
+                right = [ x for x in arr if x[0] > pivot_amount]
+                mid = [x for x in arr if x[0] == pivot_amount]
+        
+            return quick_sort(left) + mid + quick_sort(right)
+
+        sorted_transactions = quick_sort(transactions)
+        print("\n sorted using quick sort\n")
+        for amount, timestamp in sorted_transactions:
+            print(f"Amount: {amount}, Time: {timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
+        
+        
 
     # def transaction_generator():
     #     global user_transactions

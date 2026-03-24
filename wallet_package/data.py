@@ -8,9 +8,9 @@ class User:
         self.first_name = first_name
         self.last_name = last_name
         self.address = address
-        self.password = password
-        self.wallet_balance = 1000.0
-        self.is_active = True
+        self.__password = password
+        self.__wallet_balance = 1000.0
+        self.__is_active = True
         self.account_type = "Standard"
         self.profile_info = {
             "first_name": first_name,
@@ -18,19 +18,39 @@ class User:
             "address": address
         }
 
+    @property
+    def wallet_balance(self):
+        return self.__wallet_balance
+    
+    @wallet_balance.setter
+    def wallet_balance(self,value):
+        if value < 0:
+            raise ValueError("wallet_balance cannot be negative")
+        self.__wallet_balance = value
+
+    @property
+    def is_active(self):
+        return self.__is_active
+    
+    @is_active.setter
+    def is_active(self, value):
+        if not isinstance(value, bool):
+            raise ValueError("Is_active can only be a Bool value")
+        self.__is_active = value
+
     def get_transaction_limit(self):  # original method
         return 10000                # this is the limit for standard account
     
     def get_fee_rate(self):  # original method
         return 0.02         # this is for the standard user
 
-    def change_password(self, new_password):
+    def set_password(self, new_password):
     
         try:
             if new_password and re.fullmatch(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z@\d]{8,}$', new_password):
 
-                self.password = new_password
-                print("changed password:",self.password)
+                self.__password = new_password
+                print("changed password:")
             else:
                 raise Exception
         except ValueError as e:
@@ -39,6 +59,13 @@ class User:
             print(f"UnKnown Error Caught: {e}")
         finally:
             print("the change_password function is attempted here")
+
+    def check_password(self, password):
+        return self.__password == password
+    
+    @property
+    def _password_for_storage(self):
+        return self.__password
 
     def get_account_summary(self):
         print(f"[Standard Account] {self.first_name} {self.last_name}")
@@ -70,16 +97,26 @@ class User:
         try:
             for key, value in self.profile_info.items():
                 print(f"{key.capitalize()} : {value}")
-            print(f"Wallet balance: {self.wallet_balance}")
+            print(f"Wallet balance: {self.__wallet_balance}")
         except Exception as e:
             print("Error Caught:", e)
 
 
 class PremiumUser(User):
     def __init__(self, first_name, last_name, address, password):
-        super().__init__(first_name, last_name, address, password)
+        super().__init__(first_name, last_name, address,password)
         self.account_type = "Premium"
-        self.cashback_balance = 0.0
+        self.__cashback_balance = 0.0
+
+    @property
+    def cashback_balance(self):
+        return self.__cashback_balance
+    
+    @cashback_balance.setter
+    def cashback_balance(self,value):
+        if value < 0:
+            raise ValueError("The cashback balance value provided is less than 0")
+        self.__cashback_balance = value
 
     def get_transaction_limit(self):  # method overriding
         return 50000       # limit modified in the premium class method
@@ -89,15 +126,16 @@ class PremiumUser(User):
     
     def add_cashback(self, amount):
         cashback = amount * 0.05
-        self.cashback_balance += cashback
+        self.__cashback_balance += cashback
 
-    def get_account_summary(self):   # over ridden
+    def get_account_summary(self):   # over
         print(f"[Premium Account] {self.first_name} {self.last_name}")
-        print(f"Balance: Rs.{self.wallet_balance}")
-        print(f" Cashback: {self.cashback_balance}")
+        print(f"Balance: Rs.{self.__wallet_balance}")
+        print(f" Cashback: {self.__cashback_balance}")
         print(f" Status: {'Active' if self.is_active else 'Inactive'}")
 
     def display_info(self):
         super().display_info()
         print(f"Account_type: {self.account_type}")
         print(f"Cashback_balance: {self.cashback_balance}")
+

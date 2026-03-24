@@ -7,8 +7,16 @@ class Auth:
     ALERT_BALANCE = 500
 
     def __init__(self):
-        self.user_devices = {"my_phone", "my_pc","my_ipad","my_ipad"}
-        self.user_cred = ("8989","9090")
+        self.__user_devices = {"my_phone", "my_pc","my_ipad","my_ipad"}
+        self.__user_cred = ("8989","9090")
+
+    @property
+    def user_devices(self):
+        return self.__user_devices
+    
+    @property
+    def user_cred(self):
+        return self.__user_cred
 
 
 
@@ -16,11 +24,11 @@ class Auth:
         
         try:
             new_pin = input("Enter the new pin:")
-            if new_pin not in self.user_cred:
+            if new_pin not in self.__user_cred:
                 if re.fullmatch(r'\d{4}',new_pin):
-                    temp_list = list(self.user_cred)
+                    temp_list = list(self.__user_cred)
                     temp_list.append(new_pin)
-                    self.user_cred = tuple(temp_list)
+                    self.__user_cred = tuple(temp_list)
                     print("Pin added")
                 else:
                     raise ValueError("invalid pin format")
@@ -71,9 +79,9 @@ class Auth:
             pin_used = input("enter the trans pin: ")
 
             
-            if device_used not in self.user_devices:
+            if device_used not in self.__user_devices:
                 raise InValidDeviceError(f"Device used {device_used} is not trusted")
-            if pin_used not in self.user_cred:
+            if pin_used not in self.__user_cred:
                 raise InValidPinError(f"Invalid Transaction pin entered")
             
             print(f"The device and pin verified")

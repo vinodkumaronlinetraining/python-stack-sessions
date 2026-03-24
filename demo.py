@@ -1124,32 +1124,32 @@ import re
 # process_month_end(current)
 
 
-# class CreditCard:
-#     def pay(self, amount):
-#         print(f"Paid Amount: {amount} using creditcard")
+class CreditCard:
+    def pay(self, amount):
+        print(f"Paid Amount: {amount} using creditcard")
 
-# class Upi:
-#     def pay(self, amount):
-#         print(f"Paid Amount: {amount} using UPI")
+class Upi:
+    def pay(self, amount):
+        print(f"Paid Amount: {amount} using UPI")
 
-# class Crypto:
-#     def pay(self, amount):
-#         print(f"Paid Amount: {amount} using crypto")
+class Crypto:
+    def pay(self, amount):
+        print(f"Paid Amount: {amount} using crypto")
 
-# class InvalidPayment:
-#     def send(self, amount):
-#         print(f"{amount} needs to be paid")
+class CashPayment:
+    def send(self, amount):
+        print(f"{amount} needs to be paid")
 
-#     # def pay(self, amount):
-#     #     print(" this is cash payment recieved: ", amount)
+    # def pay(self, amount):
+    #     print(" this is cash payment recieved: ", amount)
 
-# def process_payment(payment_method, amount): # process_payment(cash, 300)
-#     payment_method.send(amount)  # cash.pay(300)
+def process_payment(payment_method, amount): # process_payment(cash, 300)
+    payment_method.send(amount)  # cash.pay(300)
 
 
 # credit_card = CreditCard()
 # upi = Upi()
-# cash = InvalidPayment()
+# cash = CashPayment()
 # crypto = Crypto()
 # credit_card.pay(400)
 # upi.pay(500)
@@ -1157,77 +1157,416 @@ import re
 # cash.send(500)
 # cash.pay(500)
 
-# process_payment(InvalidPayment(), 300)
-# process_payment(CreditCard(), 500)
-# process_payment(Upi(),450)
-# process_payment(Crypto(),200)
+process_payment(CashPayment(), 300)
+process_payment(CreditCard(), 500)
+process_payment(Upi(),450)
+process_payment(Crypto(),200)
+
+
+
+
+# class BankAccount:
+#     def __init__(self, name, balance):
+#         self.name = name
+#         self.balance = balance
+
+#     def deposit(self, amount, note=None):
+#         self.balance += amount
+#         print(f"Deposited Rs.{amount}. Balance : Rs.{self.balance}")
+#         if note:
+#             print(f"Note: {note}")
+
+#     def __str__(self):
+#         return f"{self.name} , Balance: Rs.{self.balance}"
+    
+# class SavingsAccount(BankAccount):
+#     def __init__(self, name, balance, intrest_rate):
+#         super().__init__(name, balance)
+#         self.intrest_rate = intrest_rate
+
+#     def apply_intrest(self, months=1, compound=False):
+#         if compound:
+#             self.balance = self.balance * (1 + self.intrest_rate) ** months
+#             print(f"Compound intrest for {months} months. Balance: Rs. {self.balance}")
+#         else:
+#             intrest = self.balance * self.intrest_rate * months
+#             self.balance += intrest
+#             print(f"Simple intrest for {months} months. Balance : Rs.{self.balance}")
+
+#     def __str__(self):
+#         return f"Savings account: {self.name}. Balance: {self.balance}. Intrest Rate: {self.intrest_rate}"
+    
+# class CurrentAccount(BankAccount):
+#     def __init__(self, name, balance, limit):
+#         super().__init__(name, balance)
+#         self.limit = limit
+
+#     def withdraw(self, amount, reason=None):
+#         if amount > self.limit:
+#             print("Exceeds limit")
+#             return
+#         else:
+#             self.balance -= amount
+#             print(f"Withdrawn: {amount}. Balance: {self.balance}")
+#         if self.balance < 0:
+#             print("Cannot process Transaction")
+#         if reason:
+#             print(f"Reason: {reason}")
+
+#     def __str__(self):
+#         return f"Current Account: {self.name}. Balance: Rs.{self.balance}. Limit: {self.limit}"
+    
+# savings_account = SavingsAccount("vinod", 10000, 0.05)
+
+# # where the function or method implementation remains same , but acts different based on paramenters,= overloading
+# savings_account.apply_intrest()
+# savings_account.apply_intrest(5)
+# savings_account.apply_intrest(6, True)
+# print("--------------------------------------\n")
+# current_account = CurrentAccount("vikas", 20000, 3000)
+
+# current_account.withdraw(2000)
+# current_account.withdraw(3000, "E.bill")
+# current_account.withdraw(5000)
+
+# print(savings_account)
+# print(current_account)
+
+
+# encapsulation:
+# class BankAccount:
+#     def __init__(self):
+#         self.__balance = 1000.0 # private attribute
+
+#     def add_balance(self, amount):
+#         if amount > 0:
+#             self.__balance += amount
+#         else: 
+#             print("Amount invalid")
+
+#     def get_balance(self):
+#         return self.__balance
+# account = BankAccount()
+# # print(account.__balance)
+# print(account.get_balance())
+# account.__balance = 500
+# print(account.get_balance())
+
+# account.add_balance(500)
+
+# print(account._BankAccount__balance)
+
+
+
+# class BankAccount:
+#     def __init__(self):
+#         self.name = "vinod"    # public attribute
+#         self._balance = 100.0   # protected   
+#         self.__accountnumber = "234653"     
+
+#     def display_info(self):
+#         return self._balance, self.__accountnumber
+        
+
+# account = BankAccount()
+# account.__accountnumber = "0000"
+
+# account._balance = 500
+# print(account.display_info())
+
+
+
+# class BankAccount:
+#     def __init__(self, name, balance, pin):
+#         self.name = name   # public
+#         self._balance = balance # protected
+#         self.__pin = pin  # private
+#         self.__transaction_log = []   # private
+
+#     def __validate_pin(self, pin):  # private method
+#         return self.__pin == pin
+    
+#     def __log_transaction(self, action, amount): # private method
+#         self.__transaction_log.append({
+#             "action": action,
+#             "amount": amount
+#         })
+#         print(f"[Log] {action}, {amount}")
+
+
+#     def deposit(self, amount, pin):  # public method
+#         if not self.__validate_pin(pin):
+#             print("Invalid pin entered")
+#             return
+#         if amount <= 0:
+#             print("inavlid amount")
+#             return
+#         self._balance += amount
+#         self.__log_transaction("deposit", amount)
+#         print(f"Deposited {amount}. New Balance: {self._balance}")
+
+
+#     def withdraw(self, amount, pin):
+#         if not self.__validate_pin(pin):
+#             print("Invalid pin")
+#             return
+#         if amount > self._balance:
+#             print("InSufficient balance")
+#             return
+#         self._balance -= amount
+#         self.__log_transaction("withdraw", amount)
+#         print(f"Withdrawn {amount}. New Balance: {self._balance}")
+
+#     def get_balance(self, pin):
+#         if not self.__validate_pin(pin):
+#             print("invalid pin")
+#             return None
+#         return self._balance
+#     def get_pin(self):
+#         return self.__pin
+    
+#     def get_transaction_log(self):
+#         return self.__transaction_log
+
+# account = BankAccount("vinod", 1000.0, "1234")
+
+
+# print(account.get_balance("1234"))
+# print(account.get_pin())
+# print(account.get_transaction_log())
+
+# account.__validate_pin("1234")
+
+
+# print(account.__pin)
+# print(account.__transaction_log)
+
+
+# # 
+
+# class Student:
+#     def __init__(self, name, marks):
+#         self.name = name # public
+#         self.__marks = marks # private
+
+
+#     # def set_value(self, value):
+#     #      self.__marks = value
+#     #      return self.__marks
+#     @property  # getter method
+#     def marks(self):
+#         return self.__marks
+    
+#     @marks.setter
+#     def marks(self, value):  # setter method
+#         if 0 <= value < 100:
+#             self.__marks = value
+#         else:
+#             print("invalid marks")
+
+# student = Student("sam", 50)
+
+# # print(student.set_value(45))
+# student.marks = 85
+# print(student.marks)
+
+
+
+# class Employee:
+#     def __init__(self, name, salary):
+
+#         self.name = name
+#         self.__salary = salary
+
+#     @property
+#     def salary(self):
+#         return self.__salary
+    
+#     @salary.setter
+#     def salary(self, value):
+#         self.__salary = value
+
+
+# emp = Employee("vinod", 10000)
+# emp.salary = 4000
+# print(emp.salary)
+
+# classes acts as the blueprint to create different instances, user, 
+
+# class MyClass:
+#     pass
+
+# class User:
+#     name = "vinod"
+#     balance = 300
+
+# user1 = User()
+# user2 = User()
+# user2.name = "vikas"
+# user2.balance = 400
+# print(user1.name)
+# print(user2.name)
+# print(user1.balance)
+# print(user2.balance)
+
+
+# print(user1.__dict__)
+# print(user2.__dict__)
+
+
+# class User:
+#     def greet(self, message):
+#         print(message)
+
+# user1 = User()
+# user1.greet("hello")
+
+# user2 = User()
+# user2.greet("namaste")
+
+
+# class User:
+    
+
+#     def __init__(self, name, balance): # (user1, vinod, 300)    # (user2, vikas,500)
+#         self.name = name    # user1.name = vinod   # user2.name = vikas
+#         self.balance = balance  # user1.balance = 300   # user2.balance = 500
+#         self.transactions = []
+
+#     def display_info(self):
+#         print(f"UserName: {self.name}, Balance: {self.balance}")
+
+# user1 = User("vinod", 300)
+# user1.display_info()
+# user2 = User("Vikas", 500)
+# user2.display_info()
+
+# user1.transactions.append("500 credit")
+# user2.transactions.append("600 debit")
+# print(user1.transactions)
+# print(user2.transactions)
+
+
+# @classmethod
+# def class_method(cls):
+#     print("Total: ", cls.total)
+
+
+# @staticmethod
+
+
+
+
+
+# class BankAccount:
+#     total_accounts = 0
+#     MINIMUM_BALANCE = 500
+
+#     def __init__(self, name, balance):
+#         self.name = name
+#         self.balance = balance
+#         BankAccount.total_accounts +=1
+
+
+#     def deposit(self, amount):
+#         self.balance += amount
+#         print(f"{self.name} deposited amount {amount}")
+
+#     def display_info(self):
+#         print("Account Holder Name: ", self.name)
+#         print("Account Balance: ", self.balance)
+
+#     @classmethod
+#     def get_total_accounts(cls):
+#         print(f" total accounts opened : {cls.total_accounts}")
+
+#     @staticmethod
+#     def get_bank_info():
+#         print("Bank Name: HDFC")
+#         print("Timings: Mon-Fri, 9AM-5PM")
+        
+# user1 = BankAccount("VINOD", 1000)
+# user2 = BankAccount("Vikas", 4000)
+# user1.get_total_accounts()
+# user1.get_bank_info()
+
+
+# dunder methods: __
+
+# class User:
+#     def __init__(self, name):
+#         self.name = name
+
+#     def __str__(self):  # runs whenever we call the print and try to  print a string by passing object 
+#         return f"User Name: {self.name}"
+    
+#     def __repr__(self):
+#         return f"User Name: {self.name}"
+    
+#     def __add__(self, otheruser):
+#         return User(self.name + "" + otheruser.name)
+        
+# user1 = User("vinod")
+# user2 = User("Kumar")
+# print(user1.name)
+# print(user1)
+# user1 
+# user3 = user1 + user2
+# print(user3)
+
+
+
+
+# class User:
+#     def __init__(self, name):
+#         self.name = name
+
+
+# class User1(User):
+#     def __init__(self, name, balance):
+#         super().__init__(name)
+#         self.balance = balance
+
+# # sample_user = User1("vinod", 400)
+# # print(sample_user.name, sample_user.balance)
+
+
+# # first_user = User("vikas")
+# # print(first_user.name)
+
+
+# class Child(User, User1):
+#     def __init__(self, name, balance, age):
+#         User.name = name
+#         User1.balance = balance
+#         self.age = age
+
+# child_obj = Child("vinod", 500, 40)
+# print(child_obj.name, child_obj.balance, child_obj.age)
+
+
+# class Grandparent:
+#     pass
+# class Parent(Grandparent):
+#     pass
+# class Child(Parent):
+#     pass
+
 
 
 
 
 class BankAccount:
-    def __init__(self, name, balance):
-        self.name = name
-        self.balance = balance
+    def display_info(self, branches=3, bank_age=40):
+        print("This is a Govt bank", branches, bank_age)
 
-    def deposit(self, amount, note=None):
-        self.balance += amount
-        print(f"Deposited Rs.{amount}. Balance : Rs.{self.balance}")
-        if note:
-            print(f"Note: {note}")
 
-    def __str__(self):
-        return f"{self.name} , Balance: Rs.{self.balance}"
-    
-class SavingsAccount(BankAccount):
-    def __init__(self, name, balance, intrest_rate):
-        super().__init__(name, balance)
-        self.intrest_rate = intrest_rate
+class PrivateBank(BankAccount):
+    # pass
+    def display_info(self, branches=3, bank_age=60):
+        print("this is a private account", branches , bank_age)
 
-    def apply_intrest(self, months=1, compound=False):
-        if compound:
-            self.balance = self.balance * (1 + self.intrest_rate) ** months
-            print(f"Compound intrest for {months} months. Balance: Rs. {self.balance}")
-        else:
-            intrest = self.balance * self.intrest_rate * months
-            self.balance += intrest
-            print(f"Simple intrest for {months} months. Balance : Rs.{self.balance}")
-
-    def __str__(self):
-        return f"Savings account: {self.name}. Balance: {self.balance}. Intrest Rate: {self.intrest_rate}"
-    
-class CurrentAccount(BankAccount):
-    def __init__(self, name, balance, limit):
-        super().__init__(name, balance)
-        self.limit = limit
-
-    def withdraw(self, amount, reason=None):
-        if amount > self.limit:
-            print("Exceeds limit")
-            return
-        else:
-            self.balance -= amount
-            print(f"Withdrawn: {amount}. Balance: {self.balance}")
-        if self.balance < 0:
-            print("Cannot process Transaction")
-        if reason:
-            print(f"Reason: {reason}")
-
-    def __str__(self):
-        return f"Current Account: {self.name}. Balance: Rs.{self.balance}. Limit: {self.limit}"
-    
-savings_account = SavingsAccount("vinod", 10000, 0.05)
-
-# where the function or method implementation remains same , but acts different based on paramenters,= overloading
-savings_account.apply_intrest()
-savings_account.apply_intrest(5)
-savings_account.apply_intrest(6, True)
-print("--------------------------------------\n")
-current_account = CurrentAccount("vikas", 20000, 3000)
-
-current_account.withdraw(2000)
-current_account.withdraw(3000, "E.bill")
-current_account.withdraw(5000)
-
-print(savings_account)
-print(current_account)
+bank = PrivateBank()
+bank.display_info()
+bank.display_info(5)
+bank.display_info(5,50)
