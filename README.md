@@ -933,58 +933,783 @@ Use read-only properties when an attribute should be set once (in `__init__`) an
 | Attribute that should never be changed | `@property` getter only (read-only) |
 
 ---
-# Bubble sort:
 
-## Problem 1 — Leaderboard Rankings
-A gaming leaderboard stores player scores. After each round, sort the scores in descending order and return how many swaps were needed — since each swap represents a rank change, fewer swaps means a more stable leaderboard.
+# DSA in Python — Summary
 
-example 1:
-Input : scores = [300, 150, 400, 250, 100]
+---
 
-Expected Output:
-Leaderboard : [400, 300, 250, 150, 100]
-Rank changes: 4
+## Sorting Algorithms
 
-example 2:
-Input : scores = [500, 100, 400, 200, 300]
+| Algorithm | Best | Average | Worst | Space | Key Idea |
+|-----------|------|---------|-------|-------|----------|
+| Bubble Sort | O(n) | O(n²) | O(n²) | O(1) | Swap adjacent elements repeatedly |
+| Insertion Sort | O(n) | O(n²) | O(n²) | O(1) | Insert each element into sorted position |
+| Selection Sort | O(n²) | O(n²) | O(n²) | O(1) | Find minimum, swap to front |
+| Merge Sort | O(n log n) | O(n log n) | O(n log n) | O(n) | Divide into halves, merge sorted halves |
+| Quick Sort | O(n log n) | O(n log n) | O(n²) | O(log n) | Pick pivot, partition around it |
+| Tim Sort | O(n) | O(n log n) | O(n log n) | O(n) | Hybrid of merge + insertion sort |
 
-Expected Output:
-Leaderboard : [500, 400, 300, 200, 100]
-Rank changes: 6
+> Tim Sort is Python's built-in sort — used by `sort()` and `sorted()`.
 
+---
 
-## Problem 2 — Sort Student Grades
+### Bubble Sort
 
-A teacher has a list of student grades. Sort them in ascending order and return the sorted grades along with the number of swaps made. Fewer swaps indicate the grades were already close to sorted.
-Example 1:
-Input : grades = [78, 55, 92, 40, 88]
-Output: sorted = [40, 55, 78, 88, 92], swaps = 6
+```python
+def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n - 1):
+        for j in range(0, n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+    return arr
+```
 
-Example 2:
-Input : grades = [90, 85, 80, 75, 70]
-Output: sorted = [70, 75, 80, 85, 90], swaps = 10
+- Two nested loops → O(n²) time, O(1) space
+- Best case O(n) when already sorted
 
-# Insertion sort:
+---
 
-## Problem 1 — Insert Incoming Exam Scores
-Students submit their exam scores one at a time throughout the day. After each submission, insert the score into the correct position in the already-sorted list and display the updated leaderboard.
+### Insertion Sort
 
-Example 1:
-Input : scores = [72, 45, 88, 60, 95]
-Output: sorted = [45, 60, 72, 88, 95], shifts = 6
+```python
+def insertion_sort(arr):
+    n = len(arr)
+    for i in range(1, n):
+        key = arr[i]
+        j = i - 1
+        while j >= 0 and arr[j] > key:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+    return arr
+```
 
-Example 2:
-Input : scores = [10, 20, 30, 40, 50]
-Output: sorted = [10, 20, 30, 40, 50], shifts = 0
+- Builds a sorted subarray from left to right
+- Best case O(n) when array is nearly sorted
 
-## Problem 2 — Sort Library Books by Page Count
+---
 
-A librarian receives books one at a time and wants to always maintain a shelf sorted by page count. Each new book must be placed in the correct position without disturbing the existing order.
+### Selection Sort
 
-Example 1:
-Input : pages = [300, 150, 400, 250, 100]
-Output: sorted = [100, 150, 250, 300, 400], shifts = 6
+```python
+def selection_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        min_idx = i
+        for j in range(i + 1, n):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+        arr[i], arr[min_idx] = arr[min_idx], arr[i]
+    return arr
+```
 
-Example 2:
-Input : pages = [500, 100, 400, 200, 300]
-Output: sorted = [100, 200, 300, 400, 500], shifts = 10
+- Always O(n²) — no best case improvement
+- Minimum swaps among O(n²) algorithms
+
+---
+
+### Merge Sort
+
+```python
+def merge_sort(arr):
+    if len(arr) > 1:
+        mid = len(arr) // 2
+        L = arr[:mid]
+        R = arr[mid:]
+        merge_sort(L)
+        merge_sort(R)
+        i = j = k = 0
+        while i < len(L) and j < len(R):
+            if L[i] < R[j]:
+                arr[k] = L[i]; i += 1
+            else:
+                arr[k] = R[j]; j += 1
+            k += 1
+        while i < len(L):
+            arr[k] = L[i]; i += 1; k += 1
+        while j < len(R):
+            arr[k] = R[j]; j += 1; k += 1
+    return arr
+```
+
+- Stable sort — equal elements maintain original order
+- O(n log n) always — no worst case degradation
+
+---
+
+### Quick Sort
+
+```python
+def quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left   = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right  = [x for x in arr if x > pivot]
+    return quick_sort(left) + middle + quick_sort(right)
+```
+
+- O(n²) worst case when pivot is always smallest/largest
+- O(n log n) average — fastest in practice for in-memory sorting
+
+---
+
+### Tim Sort
+
+```python
+# Python uses Tim Sort internally
+sorted_arr = sorted(arr)         # returns new sorted list
+arr.sort()                       # sorts in place, returns None
+arr.sort(reverse=True)           # descending order
+arr.sort(key=lambda x: x[0])    # sort by custom key
+```
+
+- Hybrid: insertion sort for small runs + merge sort for combining
+- Default algorithm in Python, Java, and Swift
+
+---
+
+## Searching Algorithms
+
+| Algorithm | Time | Space | Requires Sorted? |
+|-----------|------|-------|-----------------|
+| Linear Search | O(n) | O(1) | No |
+| Binary Search | O(log n) | O(1) | Yes |
+| Jump Search | O(√n) | O(1) | Yes |
+| Interpolation Search | O(log log n) avg | O(1) | Yes |
+| Exponential Search | O(log n) | O(1) | Yes |
+| Hash-based Search | O(1) avg | O(n) | No |
+
+---
+
+### Linear Search
+
+```python
+def linear_search(arr, target):
+    for i, val in enumerate(arr):
+        if val == target:
+            return i
+    return -1
+```
+
+---
+
+### Binary Search
+
+```python
+def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+    while left <= right:
+        mid = left + (right - left) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
+```
+
+---
+
+## Trees
+
+A hierarchical data structure of nodes connected by edges.
+
+### Key Terminology
+
+| Term | Definition |
+|------|-----------|
+| Root | Topmost node, no parent |
+| Parent / Child | Node with nodes below it / nodes below |
+| Leaf | Node with no children |
+| Edge | Link connecting parent to child |
+| Depth | Distance from root to node |
+| Height | Longest path from root to any leaf |
+
+---
+
+### Tree Node
+
+```python
+class TreeNode:
+    def __init__(self, value):
+        self.value = value
+        self.left  = None
+        self.right = None
+```
+
+---
+
+### Types of Trees
+
+| Type | Rule | Use Case |
+|------|------|----------|
+| Binary Tree | At most 2 children per node | Expression parsing |
+| BST | left < root < right | Fast lookup and insertion |
+| AVL Tree | Self-balancing BST, height diff ≤ 1 | Databases |
+| Heap | Parent ≥ children (max) or ≤ (min) | Priority queues |
+| Trie | Each node = one character | Autocomplete |
+
+---
+
+### Binary Search Tree (BST)
+
+```python
+class BinarySearchTree:
+    def __init__(self):
+        self.root = None
+
+    def insert(self, value):
+        if not self.root:
+            self.root = TreeNode(value)
+        else:
+            self._insert(self.root, value)
+
+    def _insert(self, node, value):
+        if value < node.value:
+            if node.left is None:
+                node.left = TreeNode(value)
+            else:
+                self._insert(node.left, value)
+        else:
+            if node.right is None:
+                node.right = TreeNode(value)
+            else:
+                self._insert(node.right, value)
+
+    def search(self, target):
+        return self._search(self.root, target)
+
+    def _search(self, node, target):
+        if node is None:
+            return False
+        if target == node.value:
+            return True
+        elif target < node.value:
+            return self._search(node.left, target)
+        else:
+            return self._search(node.right, target)
+```
+
+- Search/Insert/Delete: O(log n) average, O(n) worst (skewed tree)
+- Worst case occurs when inserting sorted values (1, 2, 3, 4...) — degrades to linked list
+
+---
+
+### Validate BST
+
+```python
+def is_valid_bst(root):
+    def validate(node, min_val, max_val):
+        if node is None:
+            return True
+        if not (min_val < node.value < max_val):
+            return False
+        return (validate(node.left,  min_val,   node.value) and
+                validate(node.right, node.value, max_val))
+    return validate(root, float('-inf'), float('inf'))
+```
+
+> Key insight: pass down min/max bounds at each level. Going left tightens the upper bound; going right tightens the lower bound.
+
+---
+
+## Stack & Queue
+
+### Stack — LIFO (Last In First Out)
+
+```python
+stack = []
+stack.append(10)   # push  → [10]
+stack.append(20)   # push  → [10, 20]
+stack.append(30)   # push  → [10, 20, 30]
+stack.pop()        # pop   → returns 30
+stack[-1]          # peek  → 20
+```
+
+### Queue — FIFO (First In First Out)
+
+```python
+from collections import deque
+
+queue = deque()
+queue.append(10)    # enqueue → deque([10])
+queue.append(20)    # enqueue → deque([10, 20])
+queue.popleft()     # dequeue → returns 10
+queue[0]            # peek    → 20
+```
+
+| | Stack | Queue |
+|--|-------|-------|
+| Order | LIFO | FIFO |
+| Add | push (append) | enqueue (append) |
+| Remove | pop | dequeue (popleft) |
+| Real-life | Undo button, call stack | Ticket counter, printer |
+| DSA use | DFS, recursion | BFS, scheduling |
+
+---
+
+## Graphs
+
+A collection of nodes (vertices) connected by edges — no root, no hierarchy.
+
+### Key Terminology
+
+| Term | Definition |
+|------|-----------|
+| Vertex | A single node/entity |
+| Edge | Connection between two vertices |
+| Degree | Number of edges on a node |
+| Weight | Cost assigned to an edge |
+| Self-loop | Edge connecting node to itself |
+
+---
+
+### Types of Graphs
+
+| Type | Description | Example |
+|------|-------------|---------|
+| Undirected | Edges have no direction — A—B same as B—A | Friendships |
+| Directed | Edges have direction — A→B not same as B→A | Instagram follows |
+| Weighted | Edges have a cost/distance | Road distances |
+| Cyclic | Contains a cycle | Most social networks |
+| Acyclic (DAG) | No cycles — directed | Task scheduling |
+| Disconnected | Not all nodes reachable | Island networks |
+
+---
+
+### Representations
+
+**Adjacency List** — O(V+E) space, preferred for sparse graphs
+
+```python
+graph = {
+    "A": ["B", "C"],
+    "B": ["A", "D", "E"],
+    "C": ["A", "F"],
+    "D": ["B"],
+    "E": ["B"],
+    "F": ["C"]
+}
+```
+
+**Adjacency Matrix** — O(V²) space, O(1) edge lookup
+
+```python
+#        A  B  C  D
+matrix = [
+    [0,  1,  1,  0],   # A
+    [1,  0,  0,  1],   # B
+    [1,  0,  0,  1],   # C
+    [0,  1,  1,  0],   # D
+]
+```
+
+| | Adjacency List | Adjacency Matrix |
+|--|---------------|-----------------|
+| Space | O(V + E) | O(V²) |
+| Check edge | O(degree) | O(1) |
+| Find neighbours | O(degree) | O(V) |
+| Best for | Sparse graphs | Dense graphs |
+
+---
+
+### Graph Class
+
+```python
+class Graph:
+    def __init__(self, directed=False):
+        self.adj_list = {}
+        self.directed = directed
+
+    def add_vertex(self, vertex):
+        if vertex not in self.adj_list:
+            self.adj_list[vertex] = []
+
+    def add_edge(self, u, v, weight=None):
+        self.add_vertex(u)
+        self.add_vertex(v)
+        edge = (v, weight) if weight else v
+        self.adj_list[u].append(edge)
+        if not self.directed:
+            edge2 = (u, weight) if weight else u
+            self.adj_list[v].append(edge2)
+```
+
+---
+
+## BFS — Breadth First Search
+
+Explores level by level using a **queue**. Guarantees shortest path in unweighted graphs.
+
+```python
+from collections import deque
+
+def bfs(graph, start, target):
+    queue   = deque([start])
+    visited = set([start])
+
+    while queue:
+        node = queue.popleft()
+        print(f"Visiting: {node}")
+
+        if node == target:
+            return True
+
+        for neighbour in graph[node]:
+            if neighbour not in visited:
+                visited.add(neighbour)
+                queue.append(neighbour)
+
+    return False
+```
+
+**BFS on Trees — Level Order Traversal**
+
+```python
+def level_order(root):
+    if not root:
+        return []
+    result = []
+    queue  = deque([root])
+
+    while queue:
+        level_size = len(queue)    # freeze current level count
+        level = []
+        for _ in range(level_size):
+            node = queue.popleft()
+            level.append(node.val)
+            if node.left:  queue.append(node.left)
+            if node.right: queue.append(node.right)
+        result.append(level)
+
+    return result
+```
+
+- Time: O(V+E) for graphs, O(n) for trees
+- Space: O(V) — queue holds at most one full level
+
+---
+
+## DFS — Depth First Search
+
+Goes as deep as possible before backtracking, using a **stack** or recursion.
+
+```python
+def dfs(graph, start, target, visited=None):
+    if visited is None:
+        visited = set()
+
+    visited.add(start)
+    print(f"Visiting: {start}")
+
+    if start == target:
+        return True
+
+    for neighbour in graph[start]:
+        if neighbour not in visited:
+            if dfs(graph, neighbour, target, visited):
+                return True
+
+    return False
+```
+
+**DFS on Trees**
+
+```python
+def dfs_tree(node, target):
+    if node is None:
+        return False
+
+    print(f"Visiting: {node.value}")
+
+    if node.value == target:
+        return True
+
+    if dfs_tree(node.left, target):
+        return True
+
+    print(f"Backtracking from: {node.value}")
+
+    if dfs_tree(node.right, target):
+        return True
+
+    return False
+```
+
+### BFS vs DFS
+
+| | BFS | DFS |
+|--|-----|-----|
+| Data structure | Queue | Stack / Recursion |
+| Order | Level by level | Deep first |
+| Shortest path | Yes (unweighted) | No |
+| Space | O(w) — max width | O(h) — height |
+| Use case | Shortest path, level traversal | Cycle detection, topological sort |
+
+---
+
+## Hash Map
+
+Stores key-value pairs with O(1) average lookup, insert, delete.
+
+### Creating a Hash Map
+
+```python
+# Method 1
+person = {}
+person["name"] = "Arjun"
+person["age"]  = 25
+
+# Method 2
+person = {"name": "Arjun", "age": 25, "city": "Delhi"}
+
+# Method 3
+person = dict(name="Arjun", age=25, city="Delhi")
+```
+
+### Core Operations
+
+```python
+# read
+print(person["name"])             # "Arjun"
+print(person.get("salary", 0))    # 0 — safe read with default
+
+# update / insert
+person["age"] = 26
+person["job"] = "Engineer"
+
+# delete
+del person["city"]
+popped = person.pop("job")
+
+# check key
+if "name" in person:
+    print("exists")
+
+# iterate
+for key, value in person.items():
+    print(f"{key} → {value}")
+```
+
+### Time Complexity
+
+| Operation | Average | Worst |
+|-----------|---------|-------|
+| Insert | O(1) | O(n) |
+| Lookup | O(1) | O(n) |
+| Delete | O(1) | O(n) |
+| Space | O(n) | O(n) |
+
+> Worst case O(n) occurs when all keys hash to the same bucket (collision).
+
+---
+
+## Linked Lists
+
+Nodes connected by pointers — not stored in contiguous memory.
+
+### Singly Linked List
+
+```python
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+class SinglyLinkedList:
+    def __init__(self):
+        self.head = None
+
+    def append(self, data):
+        new_node = Node(data)
+        if not self.head:
+            self.head = new_node
+            return
+        current = self.head
+        while current.next:
+            current = current.next
+        current.next = new_node
+
+    def prepend(self, data):
+        new_node = Node(data)
+        new_node.next = self.head
+        self.head = new_node
+
+    def delete(self, data):
+        if not self.head:
+            return
+        if self.head.data == data:
+            self.head = self.head.next
+            return
+        current = self.head
+        while current.next:
+            if current.next.data == data:
+                current.next = current.next.next
+                return
+            current = current.next
+```
+
+---
+
+### Doubly Linked List
+
+```python
+class DNode:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+        self.prev = None
+
+class DoublyLinkedList:
+    def __init__(self):
+        self.head = None
+        self.tail = None
+
+    def append(self, data):
+        new_node = DNode(data)
+        if not self.head:
+            self.head = self.tail = new_node
+            return
+        new_node.prev = self.tail
+        self.tail.next = new_node
+        self.tail = new_node
+```
+
+---
+
+### Circular Linked List
+
+```python
+class CNode:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+class CircularLinkedList:
+    def __init__(self):
+        self.head = None
+
+    def append(self, data):
+        new_node = CNode(data)
+        if not self.head:
+            self.head = new_node
+            new_node.next = self.head
+            return
+        current = self.head
+        while current.next != self.head:
+            current = current.next
+        current.next = new_node
+        new_node.next = self.head
+```
+
+---
+
+### When to Use Which
+
+| Type | Pointers | Direction | Use Case |
+|------|----------|-----------|----------|
+| Singly | `next` only | Forward only | Simple lists, stacks |
+| Doubly | `next` + `prev` | Both ways | Browser history, undo/redo |
+| Circular | `next` loops to head | Forward loop | Round-robin, playlists |
+
+### Time Complexity
+
+| Operation | Singly | Doubly | Circular |
+|-----------|--------|--------|----------|
+| Insert at head | O(1) | O(1) | O(1) |
+| Insert at tail | O(n) | O(1)* | O(n) |
+| Delete at head | O(1) | O(1) | O(1) |
+| Search | O(n) | O(n) | O(n) |
+| Access by index | O(n) | O(n) | O(n) |
+
+*O(1) for doubly because tail pointer is maintained directly.
+
+---
+
+## Dynamic Programming
+
+Solves problems by breaking them into overlapping subproblems and caching results to avoid recomputation.
+
+### Two Approaches
+
+**Top-down (Memoization)** — recursive + cache
+
+```python
+def fib_memo(n, memo={}):
+    if n in memo:
+        return memo[n]
+    if n <= 1:
+        return n
+    memo[n] = fib_memo(n - 1, memo) + fib_memo(n - 2, memo)
+    return memo[n]
+```
+
+**Bottom-up (Tabulation)** — iterative + table
+
+```python
+def fib_tab(n):
+    if n <= 1:
+        return n
+    dp = [0] * (n + 1)
+    dp[1] = 1
+    for i in range(2, n + 1):
+        dp[i] = dp[i - 1] + dp[i - 2]
+    return dp[n]
+```
+
+Both reduce Fibonacci from O(2ⁿ) naive recursion to **O(n) time, O(n) space**.
+
+---
+
+### Classic DP Problem — Climb Stairs
+
+```python
+def climb_stairs(n):
+    if n <= 2:
+        return n
+    dp = [0] * (n + 1)
+    dp[1] = 1
+    dp[2] = 2
+    for i in range(3, n + 1):
+        dp[i] = dp[i - 1] + dp[i - 2]
+    return dp[n]
+
+# climb_stairs(5) → 8
+# Ways: [1+1+1+1+1, 1+1+1+2, 1+1+2+1, 1+2+1+1,
+#        2+1+1+1, 1+2+2, 2+1+2, 2+2+1]
+```
+
+---
+
+## Overall Complexity Cheatsheet
+
+| Structure | Access | Search | Insert | Delete | Space |
+|-----------|--------|--------|--------|--------|-------|
+| Array | O(1) | O(n) | O(n) | O(n) | O(n) |
+| Linked List | O(n) | O(n) | O(1) | O(1) | O(n) |
+| Stack | O(n) | O(n) | O(1) | O(1) | O(n) |
+| Queue | O(n) | O(n) | O(1) | O(1) | O(n) |
+| BST (balanced) | O(log n) | O(log n) | O(log n) | O(log n) | O(n) |
+| Hash Map | O(1) | O(1) | O(1) | O(1) | O(n) |
+| BFS / DFS | — | O(V+E) | — | — | O(V) |
+| Graph (adj list) | — | O(V+E) | O(1) | O(E) | O(V+E) |
+
+---
+
+## Quick Decision Guide
+
+| Use Case | Best Structure / Algorithm |
+|----------|--------------------------|
+| Fast lookup by key | Hash Map |
+| Sorted data + fast search | BST (balanced) |
+| Shortest path (unweighted) | BFS |
+| Detect cycles, deep traversal | DFS |
+| Frequent insert/delete at front | Linked List / Deque |
+| Overlapping subproblems | Dynamic Programming |
+| Large in-memory sort | Quick Sort / Tim Sort |
+| Stable sort, linked list sort | Merge Sort |
+| Nearly sorted data | Insertion Sort |

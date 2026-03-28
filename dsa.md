@@ -210,3 +210,61 @@ Example 2:
 Input: nums = [-1,0,3,5,9,12], target = 2
 Output: -1
 Explanation: 2 does not exist in nums so return -1
+
+# Trees:
+
+<div>
+<img src="images/image1.png" alt="Binary Search Tree" width="600"/>
+<h2> fig: Binary Search Tree </h2>
+</div>
+
+
+
+
+<div>
+<img src="images/image2.png" alt="Binary Search Tree Example" width="600"/>
+<h2> fig: Different Types of Trees </h2>
+</div>
+
+
+
+
+
+<div>
+<img src="images/stacknqueue.png" alt="Stack and Queue" width="600"/>
+<h2> fig: Stack and Queue </h2>
+</div>
+
+
+
+
+<div>
+<img src="images/image3.png" alt="Graphs" width="600"/>
+<h2> fig: Graphs </h2>
+</div>
+
+
+
+
+# Singly Linked List:
+
+<div>
+<img src="images/ssl.png" alt="Singly Linked List" width="600"/>
+<h2> fig: Singly Linked List </h2>
+</div>
+
+
+
+# Doubly Linked List:
+
+<div>
+<img src="images/dll.png" alt="Doubly Linked List" width="600"/>
+<h2> fig: Doubly Linked List </h2>
+</div>
+
+# Circular Linked List:
+
+<div>
+<img src="images/sll.png" alt="Circular Linked List" width="600"/>
+<h2> fig: Circular Linked List </h2>
+</div>
